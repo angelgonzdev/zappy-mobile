@@ -1,19 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="#FFFFFF"
+    android:padding="20dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    ```
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Título -->
+        <TextView
+            android:id="@+id/txtTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zappy ⚡"
+            android:textColor="#F55D3E"
+            android:textStyle="bold"
+            android:textSize="28sp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Encabezado "Iniciar Sesión" -->
+        <TextView
+            android:id="@+id/txtIniciar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Iniciar Sesión"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="18dp" />
+
+        <!-- Campo de usuario -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@android:color/darker_gray"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:text="👤"
+                android:gravity="center" />
+
+            <EditText
+                android:id="@+id/edtCorreo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:hint="Usuario o Correo electrónico"
+                android:background="@android:color/transparent"
+                android:inputType="textEmailAddress" />
+        </LinearLayout>
+
+        <!-- Campo de contraseña -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@android:color/darker_gray"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:layout_marginBottom="6dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:text="🔒"
+                android:gravity="center" />
+
+            <EditText
+                android:id="@+id/edtContrasena"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:hint="Contraseña"
+                android:background="@android:color/transparent"
+                android:inputType="textPassword" />
+        </LinearLayout>
+
+        <!-- Checkbox recordar -->
+        <CheckBox
+            android:id="@+id/chkRecordarme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recordarme"
+            android:textColor="#444444"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Botón Iniciar Sesión -->
+        <Button
+            android:id="@+id/btnIniciar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Iniciar Sesión"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#F55D3E"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Botón Registrarme -->
+        <Button
+            android:id="@+id/btnRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Registrarme"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF7664"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Texto de ayuda / pie -->
+        <TextView
+            android:id="@+id/txtAyuda"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Olvidaste tu contraseña?"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+
+</ScrollView>
+
