@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tvTitlePdf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Título"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:padding="12dp"/>
+
+    <ImageView
+        android:id="@+id/imgPage"
+        android:layout_below="@id/tvTitlePdf"
+        android:layout_above="@+id/controls"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"/>
+
+    <LinearLayout
+        android:id="@+id/controls"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="#DD000000">
+
+        <Button
+            android:id="@+id/btnPrev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Anterior"/>
+
+        <TextView
+            android:id="@+id/tvPage"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 / 1"
+            android:textColor="#FFF"/>
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Siguiente"/>
+
+    </LinearLayout>
+</RelativeLayout>
