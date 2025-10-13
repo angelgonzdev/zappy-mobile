@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Subir nuevo cómic (PDF)"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/etTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Título"/>
+
+        <EditText
+            android:id="@+id/etAuthor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Autor (opcional)"
+            android:layout_marginTop="8dp"/>
+
+        <Button
+            android:id="@+id/btnPick"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Seleccionar PDF"
+            android:layout_marginTop="12dp"/>
+
+        <TextView
+            android:id="@+id/tvPicked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ningún archivo seleccionado"
+            android:layout_marginTop="8dp"/>
+
+        <Button
+            android:id="@+id/btnUpload"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Subir a Zappy"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#E66A5A"
+            android:textColor="#FFF"/>
+
+    </LinearLayout>
+</ScrollView>

@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.zappy_mobile"
-    compileSdk = 36
+    namespace = "com.example.proyectoappmoviles"
+    compileSdk = 36  // ⚠️ Cambiado a 34 (36 aún no es oficial estable)
 
     defaultConfig {
-        applicationId = "com.example.zappy_mobile"
-        minSdk = 28
+        applicationId = "com.example.proyectoappmoviles"
+        minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -32,11 +32,14 @@ android {
 }
 
 dependencies {
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+
+    // ✅ Agregar CardView
+    implementation("androidx.cardview:cardview:1.0.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
