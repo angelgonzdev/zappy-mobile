@@ -1,10 +1,7 @@
 package com.example.zappy_mobile;
+
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -14,9 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.proyectoappmoviles.R;
+import com.example.zappy_mobile.R;
 
-import java.io.File;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ComicAdapter.OnItemClickListener {
@@ -32,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements ComicAdapter.OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Inicialización de componentes
         dbHelper = new DBHelper(this);
         rvComics = findViewById(R.id.rvComics);
         btnCreate = findViewById(R.id.btnCreateComic);
@@ -39,15 +36,16 @@ public class MainActivity extends AppCompatActivity implements ComicAdapter.OnIt
         navHome = findViewById(R.id.navHome);
         navProfile = findViewById(R.id.navProfile);
 
+        // Configuración del RecyclerView
         rvComics.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ComicAdapter(this);
         adapter.setOnItemClickListener(this);
         rvComics.setAdapter(adapter);
 
+        // Botones
         btnCreate.setOnClickListener(v -> openUpload());
-
         navUpload.setOnClickListener(v -> openUpload());
-        navHome.setOnClickListener(v -> Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show());
+        navHome.setOnClickListener(v -> Toast.makeText(this, "Inicio", Toast.LENGTH_SHORT).show());
         navProfile.setOnClickListener(v -> Toast.makeText(this, "Perfil (demo)", Toast.LENGTH_SHORT).show());
     }
 
@@ -57,21 +55,29 @@ public class MainActivity extends AppCompatActivity implements ComicAdapter.OnIt
         loadComics();
     }
 
+    /**
+     * Carga todos los cómics guardados en la base de datos y los muestra en el RecyclerView.
+     */
     private void loadComics() {
         List<Comic> list = dbHelper.getAllComics();
         adapter.setComics(list);
     }
 
+    /**
+     * Abre la actividad para subir un nuevo cómic (archivo PDF).
+     */
     private void openUpload() {
         startActivity(new Intent(this, UploadActivity.class));
     }
 
+    /**
+     * Cuando el usuario toca un cómic en la lista, se abre en el visor PDF.
+     */
     @Override
     public void onItemClick(Comic comic) {
-        // Abrir PDF viewer
-        Intent i = new Intent(this, PdfViewerActivity.class);
-        i.putExtra("path", comic.getFilePath());
-        i.putExtra("title", comic.getTitle());
-        startActivity(i);
+        Intent intent = new Intent(this, PdfViewerActivity.class);
+        intent.putExtra("path", comic.getFilePath());
+        intent.putExtra("title", comic.getTitle());
+        startActivity(intent);
     }
 }

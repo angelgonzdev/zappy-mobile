@@ -4,7 +4,7 @@
     android:id="@+id/rootMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#0A0A0A"
     android:padding="16dp"
     tools:context=".MainActivity">
 
@@ -22,17 +22,18 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Zappy ⚡"
-            android:textSize="26sp"
+            android:text="⚡ Zappy Comics"
+            android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#E64A4A"
-            android:lineSpacingExtra="4dp"/>
+            android:textColor="#F56DF0"
+            android:fontFamily="sans-serif-medium" />
 
         <ImageButton
             android:id="@+id/btnSettings"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="#FFFFFF"
             android:src="@android:drawable/ic_menu_manage"
             android:contentDescription="Configuración" />
     </LinearLayout>
@@ -46,20 +47,18 @@
         android:text="Crea tu historia"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:lineSpacingExtra="6dp"
-        android:layout_marginBottom="8dp"
-        android:textColor="#000000"/>
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="6dp" />
 
     <TextView
         android:id="@+id/tvSub"
         android:layout_below="@id/tvCreate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Descubre y crea increíbles cómics y novelas gráficas"
+        android:text="Descubre y comparte tus cómics favoritos"
         android:textSize="14sp"
-        android:textColor="#666666"
-        android:lineSpacingExtra="6dp"
-        android:layout_marginBottom="20dp"/>
+        android:textColor="#C4C4C4"
+        android:layout_marginBottom="20dp" />
 
     <!-- ================= BOTÓN PRINCIPAL ================= -->
     <Button
@@ -69,9 +68,12 @@
         android:layout_height="52dp"
         android:text="+ Crear Nuevo Cómic"
         android:textSize="16sp"
+        android:textStyle="bold"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#E66A5A"
-        android:layout_marginBottom="24dp"/>
+        android:backgroundTint="#A020F0"
+        android:elevation="6dp"
+        android:layout_marginBottom="24dp"
+        android:fontFamily="sans-serif-medium" />
 
     <!-- ================= LISTA ================= -->
     <androidx.recyclerview.widget.RecyclerView
@@ -80,54 +82,59 @@
         android:layout_above="@+id/bottomBar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
         android:clipToPadding="false"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="12dp"
+        android:scrollbars="vertical" />
 
     <!-- ================= BOTTOM BAR ================= -->
     <LinearLayout
         android:id="@+id/bottomBar"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="70dp"
         android:orientation="horizontal"
         android:gravity="center"
-        android:background="#000000"
+        android:background="#1A1A1A"
         android:paddingHorizontal="24dp"
-        android:paddingVertical="12dp">
+        android:paddingVertical="12dp"
+        android:elevation="8dp">
 
         <ImageButton
             android:id="@+id/navHome"
             android:layout_width="52dp"
             android:layout_height="52dp"
+            android:tint="#F56DF0"
             android:src="@android:drawable/ic_menu_view"
             android:background="@android:drawable/dialog_holo_light_frame"
-            android:contentDescription="Inicio"/>
+            android:contentDescription="Inicio" />
 
         <Space
             android:layout_width="32dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <ImageButton
             android:id="@+id/navUpload"
             android:layout_width="52dp"
             android:layout_height="52dp"
+            android:tint="#FF85FF"
             android:src="@android:drawable/ic_input_add"
             android:background="@android:drawable/dialog_holo_light_frame"
-            android:contentDescription="Subir"/>
+            android:contentDescription="Subir" />
 
         <Space
             android:layout_width="32dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <ImageButton
             android:id="@+id/navProfile"
             android:layout_width="52dp"
             android:layout_height="52dp"
-            android:src="@android:drawable/alert_dark_frame"
+            android:tint="#C77DFF"
+            android:src="@android:drawable/ic_menu_myplaces"
             android:background="@android:drawable/dialog_holo_light_frame"
-            android:contentDescription="Perfil"/>
+            android:contentDescription="Perfil" />
     </LinearLayout>
 
 </RelativeLayout>
