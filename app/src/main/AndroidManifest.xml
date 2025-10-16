@@ -8,6 +8,7 @@
         android:label="Zappy"
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
 
+        <!-- LoginActivity → actividad de inicio -->
         <activity android:name=".LoginActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -15,9 +16,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".HomeActivity" android:exported="false" />
+        <!-- RegistroActivity → abrir desde Login -->
+        <activity android:name=".RegistroActivity" android:exported="true" />
+
+        <!-- HomeActivity → abrir desde Login -->
+        <activity android:name=".HomeActivity" android:exported="true" />
+
+        <!-- Otras actividades internas -->
         <activity android:name=".ProfileActivity" android:exported="false" />
-        <activity android:name=".RegistroActivity" android:exported="false" />
         <activity android:name=".UploadActivity" android:exported="false" />
         <activity android:name=".PdfViewerActivity" android:exported="false" />
 

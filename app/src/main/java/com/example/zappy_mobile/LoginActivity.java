@@ -12,40 +12,42 @@ import androidx.appcompat.app.AppCompatActivity;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsuario, etClave;
-    private CheckBox cbRecordarme;
     private Button btnIniciarSesion, btnIrRegistro;
+    private CheckBox cbRecordarme;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_main); // tu layout de login
 
-        // Vincular vistas
         etUsuario = findViewById(R.id.etUsuario);
         etClave = findViewById(R.id.etClave);
         cbRecordarme = findViewById(R.id.cbRecordarme);
         btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
         btnIrRegistro = findViewById(R.id.btnIrRegistro);
 
-        // Botón Iniciar Sesión
+        dbHelper = new DatabaseHelper(this);
+
+        // Botón iniciar sesión
         btnIniciarSesion.setOnClickListener(v -> {
-            String usuario = etUsuario.getText().toString().trim();
-            String clave = etClave.getText().toString().trim();
+            String username = etUsuario.getText().toString().trim();
+            String password = etClave.getText().toString().trim();
 
-            if (usuario.isEmpty() || clave.isEmpty()) {
-                Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
-                return;
+            if(username.isEmpty() || password.isEmpty()){
+                Toast.makeText(this, "Ingrese usuario y contraseña", Toast.LENGTH_SHORT).show();
+            } else {
+                boolean loginOk = dbHelper.checkUser(username, password);
+                if(loginOk){
+                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                }
             }
-
-            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            startActivity(intent);
-            finish();
         });
 
-        // Botón Registrarse
-        btnIrRegistro.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegistroActivity.class);
-            startActivity(intent);
-        });
+        // Botón ir a registro
+        btnIrRegistro.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RegistroActivity.class)));
     }
 }

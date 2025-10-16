@@ -10,48 +10,49 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class RegistroActivity extends AppCompatActivity {
 
-    private EditText etNombre, etEmail, etPassword, etConfirmPassword;
+    private EditText etNombre, etCorreo, etClave, etConfirmarClave;
     private Button btnRegistrar, btnVolverLogin;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_register); // tu layout de registro
 
-        // Vincular vistas (ajusta los IDs según tu XML)
         etNombre = findViewById(R.id.etNombre);
-        etEmail = findViewById(R.id.etCorreo);
-        etPassword = findViewById(R.id.etClave);
-        etConfirmPassword = findViewById(R.id.etConfirmarClave);
+        etCorreo = findViewById(R.id.etCorreo);
+        etClave = findViewById(R.id.etClave);
+        etConfirmarClave = findViewById(R.id.etConfirmarClave);
         btnRegistrar = findViewById(R.id.btnRegistrar);
         btnVolverLogin = findViewById(R.id.btnVolverLogin);
 
-        // Botón Registrar
+        dbHelper = new DatabaseHelper(this);
+
         btnRegistrar.setOnClickListener(v -> {
-            String nombre = etNombre.getText().toString().trim();
-            String email = etEmail.getText().toString().trim();
-            String password = etPassword.getText().toString().trim();
-            String confirmPass = etConfirmPassword.getText().toString().trim();
+            String username = etNombre.getText().toString().trim();
+            String email = etCorreo.getText().toString().trim();
+            String password = etClave.getText().toString().trim();
+            String confirm = etConfirmarClave.getText().toString().trim();
 
-            // Validaciones básicas
-            if (nombre.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (!password.equals(confirmPass)) {
+            if(username.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()){
+                Toast.makeText(this, "Complete todos los campos", Toast.LENGTH_SHORT).show();
+            } else if(!password.equals(confirm)){
                 Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show();
-                return;
+            } else {
+                boolean success = dbHelper.addUser(username, email, password);
+                if(success){
+                    Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(RegistroActivity.this, LoginActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(this, "Error al registrar usuario", Toast.LENGTH_SHORT).show();
+                }
             }
-
-            // Aquí guardarías en tu base de datos
-            // dbHelper.insertarUsuario(nombre, email, password);
-
-            Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show();
-            finish(); // Vuelve al login
         });
 
-        // Botón Volver al Login
-        btnVolverLogin.setOnClickListener(v -> finish());
+        btnVolverLogin.setOnClickListener(v -> {
+            startActivity(new Intent(RegistroActivity.this, LoginActivity.class));
+            finish();
+        });
     }
 }
