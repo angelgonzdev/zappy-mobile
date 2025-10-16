@@ -3,7 +3,8 @@ package com.example.zappy_mobile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -19,32 +20,56 @@ public class HomeActivity extends AppCompatActivity implements ComicAdapter.OnIt
     private DBHelper dbHelper;
     private ComicAdapter adapter;
     private Button btnCreate;
-    private ImageButton navUpload, navHome, navProfile;
+    private LinearLayout btnHome, btnLibrary, btnCreateNav, btnProfile;
+    private ImageView btnSettings;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home); // ✅ Usa tu layout correcto
+        setContentView(R.layout.activity_home);
 
-        // Inicialización de componentes
+        // Inicialización
         dbHelper = new DBHelper(this);
         rvComics = findViewById(R.id.rvComics);
         btnCreate = findViewById(R.id.btnCreateComic);
-        navUpload = findViewById(R.id.navUpload);
-        navHome = findViewById(R.id.navHome);
-        navProfile = findViewById(R.id.navProfile);
+        btnSettings = findViewById(R.id.btnSettings);
 
-        // Configuración del RecyclerView
+        // Botones del footer
+        btnHome = findViewById(R.id.btnHome);
+        btnLibrary = findViewById(R.id.btnLibrary);
+        btnCreateNav = findViewById(R.id.btnCreate);
+        btnProfile = findViewById(R.id.btnProfile);
+
+        // RecyclerView
         rvComics.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ComicAdapter(this);
         adapter.setOnItemClickListener(this);
         rvComics.setAdapter(adapter);
 
-        // Botones
+        // Botón crear (centro de la pantalla)
         btnCreate.setOnClickListener(v -> openUpload());
-        navUpload.setOnClickListener(v -> openUpload());
-        navHome.setOnClickListener(v -> Toast.makeText(this, "Inicio", Toast.LENGTH_SHORT).show());
-        navProfile.setOnClickListener(v -> Toast.makeText(this, "Perfil (demo)", Toast.LENGTH_SHORT).show());
+
+        // Configuración
+        btnSettings.setOnClickListener(v ->
+                Toast.makeText(this, "Configuración (próximamente)", Toast.LENGTH_SHORT).show()
+        );
+
+        // Navegación del footer
+        btnHome.setOnClickListener(v ->
+                Toast.makeText(this, "Ya estás en Inicio", Toast.LENGTH_SHORT).show()
+        );
+
+        btnLibrary.setOnClickListener(v ->
+                Toast.makeText(this, "Biblioteca (próximamente)", Toast.LENGTH_SHORT).show()
+        );
+
+        btnCreateNav.setOnClickListener(v -> openUpload());
+
+        btnProfile.setOnClickListener(v -> {
+            startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+        });
+
+        loadComics();
     }
 
     @Override

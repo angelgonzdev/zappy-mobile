@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootMain"
     android:layout_width="match_parent"
@@ -7,16 +8,14 @@
     android:background="#FFFFFF"
     tools:context=".MainActivity">
 
-
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toTopOf="parent">
+        android:gravity="center_vertical">
 
         <TextView
             android:layout_width="0dp"
@@ -25,7 +24,7 @@
             android:text="Zappy ⚡"
             android:textSize="24sp"
             android:textColor="@color/red_primary"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/btnSettings"
@@ -33,56 +32,63 @@
             android:layout_height="32dp"
             android:src="@drawable/ic_config"
             android:background="@drawable/profile_bg"
-            android:contentDescription="Settings"/>
+            android:contentDescription="Settings" />
     </LinearLayout>
 
-    <!-- ================= TITULOS ================= -->
-    <TextView
-        android:id="@+id/tvCreate"
-        android:layout_below="@id/header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Crea tu historia"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:lineSpacingExtra="6dp"
-        android:layout_marginBottom="8dp"
-        android:textColor="#000000"/>
-
-    <TextView
-        android:id="@+id/tvSub"
-        android:layout_below="@id/tvCreate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Descubre y crea increíbles cómics y novelas gráficas"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:lineSpacingExtra="6dp"
-        android:layout_marginBottom="20dp"/>
-
-    <!-- ================= BOTÓN PRINCIPAL ================= -->
-    <Button
-        android:id="@+id/btnCreateComic"
-        android:layout_below="@id/tvSub"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:text="+ Crear Nuevo Cómic"
-        android:textSize="16sp"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#E66A5A"
-        android:layout_marginBottom="24dp"/>
-
-    <!-- ================= LISTA ================= -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvComics"
-        android:layout_below="@id/btnCreateComic"
-        android:layout_above="@id/bottom_nav"
+    <!-- ================= CONTENIDO PRINCIPAL ================= -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        android:clipToPadding="false"
-        android:layout_marginBottom="12dp"/>
+        android:layout_below="@id/header"
+        android:layout_above="@id/bottom_nav"
+        android:orientation="vertical"
+        android:padding="14dp"
+        android:paddingBottom="80dp">
+
+        <!-- ================= TITULOS ================= -->
+        <TextView
+            android:id="@+id/tvCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Crea tu historia"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:lineSpacingExtra="6dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/tvSub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Descubre y crea increíbles cómics y novelas gráficas"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:lineSpacingExtra="6dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- ================= BOTÓN PRINCIPAL ================= -->
+        <Button
+            android:id="@+id/btnCreateComic"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="+ Crear Nuevo Cómic"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#E66A5A"
+            android:layout_marginBottom="24dp" />
+
+        <!-- ================= LISTA ================= -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvComics"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:clipToPadding="false"
+            android:layout_marginBottom="12dp" />
+
+    </LinearLayout>
 
     <!-- ================= BOTTOM BAR ================= -->
     <LinearLayout
@@ -110,7 +116,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_home"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
         </LinearLayout>
 
         <!-- Botón Biblioteca -->
@@ -127,7 +133,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_library"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
         </LinearLayout>
 
         <!-- Botón Crear -->
@@ -144,7 +150,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_edit"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
         </LinearLayout>
 
         <!-- Botón Perfil -->
@@ -161,7 +167,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_profile"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
         </LinearLayout>
     </LinearLayout>
 

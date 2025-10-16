@@ -285,7 +285,7 @@
             android:id="@+id/btnProfile"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical"
             android:background="@drawable/bg_button_round">
