@@ -1,19 +1,19 @@
 package com.example.zappy_mobile;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.zappy_mobile.R;
-
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ComicAdapter.OnItemClickListener {
+public class HomeActivity extends AppCompatActivity implements ComicAdapter.OnItemClickListener {
 
     private RecyclerView rvComics;
     private DBHelper dbHelper;
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements ComicAdapter.OnIt
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home); // ✅ Usa tu layout correcto
 
         // Inicialización de componentes
         dbHelper = new DBHelper(this);
@@ -53,24 +53,15 @@ public class MainActivity extends AppCompatActivity implements ComicAdapter.OnIt
         loadComics();
     }
 
-    /**
-     * Carga todos los cómics guardados en la base de datos y los muestra en el RecyclerView.
-     */
     private void loadComics() {
         List<Comic> list = dbHelper.getAllComics();
         adapter.setComics(list);
     }
 
-    /**
-     * Abre la actividad para subir un nuevo cómic (archivo PDF).
-     */
     private void openUpload() {
         startActivity(new Intent(this, UploadActivity.class));
     }
 
-    /**
-     * Cuando el usuario toca un cómic en la lista, se abre en el visor PDF.
-     */
     @Override
     public void onItemClick(Comic comic) {
         Intent intent = new Intent(this, PdfViewerActivity.class);
