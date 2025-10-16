@@ -1,6 +1,5 @@
 package com.example.zappy_mobile;
 
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.pdf.PdfRenderer;
@@ -11,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
@@ -18,85 +18,109 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+/**
+ * Adaptador del RecyclerView para mostrar la lista de cómics en Zappy.
+ * Genera miniaturas (thumbnails) de las primeras páginas de los PDFs de forma asíncrona.
+ */
 public class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
+    // Interfaz para manejar clics en los elementos
     public interface OnItemClickListener {
         void onItemClick(Comic comic);
     }
 
     private List<Comic> comics = new ArrayList<>();
-    private Context ctx;
+    private final Context context;
     private OnItemClickListener listener;
 
-    public ComicAdapter(Context ctx) { this.ctx = ctx; }
+    // Constructor
+    public ComicAdapter(Context context) {
+        this.context = context;
+    }
 
+    // Actualiza la lista de cómics mostrada
     public void setComics(List<Comic> list) {
-        this.comics = list;
+        this.comics = list != null ? list : new ArrayList<>();
         notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnItemClickListener l) {
-        this.listener = l;
+    // Asigna el listener de clics
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_comic, parent, false);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_comic, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Comic c = comics.get(position);
-        holder.tvTitle.setText(c.getTitle());
-        holder.tvAuthor.setText("Por autor: " + (c.getAuthor() == null ? "Anon" : c.getAuthor()));
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Comic comic = comics.get(position);
 
+        holder.tvTitle.setText(comic.getTitle());
+        holder.tvAuthor.setText("Por autor: " + (comic.getAuthor() == null ? "Anónimo" : comic.getAuthor()));
+
+        // Manejar clic sobre el item
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) listener.onItemClick(c);
+            if (listener != null) listener.onItemClick(comic);
         });
 
-        // Generar thumbnail de la primera página de forma asíncrona
+        // Imagen por defecto mientras se genera el thumbnail
         holder.imgThumb.setImageResource(android.R.color.darker_gray);
+
+        // Generar miniatura de forma asíncrona
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
-                File f = new File(c.getFilePath());
-                if (f.exists()) {
-                    ParcelFileDescriptor pfd = ParcelFileDescriptor.open(f, ParcelFileDescriptor.MODE_READ_ONLY);
+                File file = new File(comic.getFilePath());
+                if (file.exists()) {
+                    ParcelFileDescriptor pfd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
                     PdfRenderer renderer = new PdfRenderer(pfd);
+
                     if (renderer.getPageCount() > 0) {
                         PdfRenderer.Page page = renderer.openPage(0);
-                        int w = page.getWidth() * 2;
-                        int h = page.getHeight() * 2;
-                        final Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-                        page.render(bmp, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+
+                        int width = page.getWidth() * 2;
+                        int height = page.getHeight() * 2;
+
+                        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+
                         page.close();
                         renderer.close();
                         pfd.close();
-                        holder.imgThumb.post(() -> holder.imgThumb.setImageBitmap(bmp));
+
+                        // Actualiza la UI en el hilo principal
+                        holder.imgThumb.post(() -> holder.imgThumb.setImageBitmap(bitmap));
                     } else {
                         renderer.close();
                         pfd.close();
                     }
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
 
     @Override
-    public int getItemCount() { return comics.size(); }
+    public int getItemCount() {
+        return comics.size();
+    }
 
+    // Clase interna ViewHolder para cada elemento del RecyclerView
     static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgThumb;
-        TextView tvTitle, tvAuthor;
+        final ImageView imgThumb;
+        final TextView tvTitle, tvAuthor;
 
-        ViewHolder(View item) {
-            super(item);
-            imgThumb = item.findViewById(R.id.imgThumb);
-            tvTitle = item.findViewById(R.id.tvTitle);
-            tvAuthor = item.findViewById(R.id.tvAuthor);
+        ViewHolder(View itemView) {
+            super(itemView);
+            imgThumb = itemView.findViewById(R.id.imgThumb);
+            tvTitle = itemView.findViewById(R.id.tvTitle);
+            tvAuthor = itemView.findViewById(R.id.tvAuthor);
         }
     }
 }
-

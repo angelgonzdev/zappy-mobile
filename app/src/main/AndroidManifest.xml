@@ -11,9 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Zappy_mobile">
-        <activity
-            android:name=".register"
-            android:exported="false" />
+
+        <!-- Actividad principal -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -23,6 +22,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Otras actividades -->
+        <activity android:name=".UploadActivity" />
+        <activity android:name=".PdfViewerActivity" />
+
     </application>
 
 </manifest>
