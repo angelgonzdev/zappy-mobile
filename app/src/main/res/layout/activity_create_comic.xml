@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".CreateComicActivity">
+    tools:context=".UploadActivity">
 
     <!-- ================= HEADER ================= -->
     <LinearLayout
@@ -261,7 +261,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_edit"
-                        android:contentDescription="@string/project_icon" />
+                        android:contentDescription="Ícono del proyecto" />
                 </LinearLayout>
 
                 <!-- Texto -->
