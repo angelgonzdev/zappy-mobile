@@ -49,19 +49,22 @@ public class HomeActivity extends AppCompatActivity implements ComicAdapter.OnIt
         // Botón crear (centro de la pantalla)
         btnCreate.setOnClickListener(v -> openUpload());
 
-        // Configuración
-        btnSettings.setOnClickListener(v ->
-                Toast.makeText(this, "Configuración (próximamente)", Toast.LENGTH_SHORT).show()
-        );
+        // Botón de Configuración -> Abrir SettingsActivity
+        btnSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
 
         // Navegación del footer
         btnHome.setOnClickListener(v ->
                 Toast.makeText(this, "Ya estás en Inicio", Toast.LENGTH_SHORT).show()
         );
 
-        btnLibrary.setOnClickListener(v ->
-                Toast.makeText(this, "Biblioteca (próximamente)", Toast.LENGTH_SHORT).show()
-        );
+        // Botón Biblioteca -> Abrir LibraryActivity
+        btnLibrary.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, LibraryActivity.class);
+            startActivity(intent);
+        });
 
         btnCreateNav.setOnClickListener(v -> openUpload());
 

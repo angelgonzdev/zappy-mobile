@@ -12,7 +12,7 @@ import com.google.android.material.button.MaterialButton;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private LinearLayout btnHome, btnLibrary, btnEdit, btnProfile;
+    private LinearLayout btnHome, btnLibrary, btnCreate, btnProfile;
     private MaterialButton btnEditProfile;
     private ImageView btnSettings;
 
@@ -24,7 +24,7 @@ public class ProfileActivity extends AppCompatActivity {
         // Vincular vistas
         btnHome = findViewById(R.id.btnHome);
         btnLibrary = findViewById(R.id.btnLibrary);
-        btnEdit = findViewById(R.id.btnEdit);
+        btnCreate = findViewById(R.id.btnEdit); // antes llamado btnEdit
         btnProfile = findViewById(R.id.btnProfile);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         btnSettings = findViewById(R.id.btnSettings);
@@ -36,12 +36,13 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         btnLibrary.setOnClickListener(v -> {
-            Toast.makeText(this, "Biblioteca (próximamente)", Toast.LENGTH_SHORT).show();
-            // startActivity(new Intent(ProfileActivity.this, LibraryActivity.class));
+            startActivity(new Intent(ProfileActivity.this, LibraryActivity.class));
+            finish();
         });
 
-        btnEdit.setOnClickListener(v -> {
+        btnCreate.setOnClickListener(v -> {
             startActivity(new Intent(ProfileActivity.this, UploadActivity.class));
+            finish();
         });
 
         btnProfile.setOnClickListener(v -> {

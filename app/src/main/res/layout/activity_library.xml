@@ -1,115 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rootMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    tools:context=".HomeActivity">
+    android:background="#FFF5F0">
 
     <!-- ================= HEADER ================= -->
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:gravity="center_vertical"
+        android:elevation="8dp"
+        android:background="#E66A5A">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Zappy ⚡"
-            android:textSize="24sp"
-            android:textColor="@color/red_primary"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/btnSettings"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_config"
-            android:background="@drawable/profile_bg"
-            android:contentDescription="Settings" />
+            android:text="Biblioteca"
+            android:textSize="26sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:shadowColor="#88000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4" />
     </LinearLayout>
 
-    <!-- ================= CONTENIDO PRINCIPAL ================= -->
-    <LinearLayout
+    <!-- ================= SPACER DECORATIVO ================= -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="#FFE5DE"
+        android:layout_below="@id/header" />
+
+    <!-- ================= RECYCLERVIEW ================= -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvLibrary"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/header"
-        android:layout_above="@id/bottom_nav"
-        android:orientation="vertical"
-        android:padding="14dp"
-        android:paddingBottom="80dp">
-
-        <!-- ================= TITULOS ================= -->
-        <TextView
-            android:id="@+id/tvCreate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Crea tu historia"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:lineSpacingExtra="6dp"
-            android:layout_marginBottom="8dp"
-            android:textColor="#000000" />
-
-        <TextView
-            android:id="@+id/tvSub"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Descubre y crea increíbles cómics y novelas gráficas"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:lineSpacingExtra="6dp"
-            android:layout_marginBottom="20dp" />
-
-        <!-- ================= IMAGEN DESTACADA ================= -->
-        <ImageView
-            android:id="@+id/imgFeatured"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:scaleType="centerCrop"
-            android:layout_marginBottom="16dp"
-            android:src="@drawable/superman" />
-
-        <!-- ================= BOTÓN PRINCIPAL ================= -->
-        <Button
-            android:id="@+id/btnCreateComic"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="+ Crear Nuevo Cómic"
-            android:textSize="16sp"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#E66A5A"
-            android:layout_marginBottom="24dp" />
-
-        <!-- ================= LISTA ================= -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvComics"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:clipToPadding="false"
-            android:layout_marginBottom="12dp" />
-
-    </LinearLayout>
+        android:layout_above="@+id/bottom_nav"
+        android:padding="12dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
+        android:background="#FFF5F0" />
 
     <!-- ================= BOTTOM BAR ================= -->
     <LinearLayout
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:background="@color/black"
         android:gravity="center"
         android:weightSum="4"
-        android:elevation="8dp"
-        android:layout_alignParentBottom="true">
+        android:elevation="8dp">
 
         <!-- Botón Inicio -->
         <LinearLayout

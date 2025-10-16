@@ -20,6 +20,9 @@
         <activity android:name=".RegistroActivity" android:exported="false" />
         <activity android:name=".UploadActivity" android:exported="false" />
         <activity android:name=".PdfViewerActivity" android:exported="false" />
+        <activity android:name=".SettingsActivity" android:exported="false" />
+        <activity android:name=".LibraryActivity" android:exported="false" />
+
 
     </application>
 

@@ -79,7 +79,8 @@ public class UploadActivity extends AppCompatActivity {
         });
 
         btnLibrary.setOnClickListener(v -> {
-            Toast.makeText(this, "Biblioteca (próximamente)", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(UploadActivity.this, LibraryActivity.class));
+            finish();
         });
 
         btnCreate.setOnClickListener(v -> {
@@ -88,9 +89,10 @@ public class UploadActivity extends AppCompatActivity {
 
         btnProfile.setOnClickListener(v -> {
             startActivity(new Intent(UploadActivity.this, ProfileActivity.class));
+            finish();
         });
 
-        // Botón configuración
+        // Botón configuración (opcional)
         if (btnSettings != null) {
             btnSettings.setOnClickListener(v -> {
                 Toast.makeText(this, "Configuración (próximamente)", Toast.LENGTH_SHORT).show();
@@ -154,6 +156,8 @@ public class UploadActivity extends AppCompatActivity {
 
             if (id > 0) {
                 Toast.makeText(this, "Cómic subido correctamente", Toast.LENGTH_SHORT).show();
+                // Redirigir automáticamente a Biblioteca para ver el nuevo cómic
+                startActivity(new Intent(UploadActivity.this, LibraryActivity.class));
                 finish();
             } else {
                 Toast.makeText(this, "Error guardando en la base de datos", Toast.LENGTH_SHORT).show();
