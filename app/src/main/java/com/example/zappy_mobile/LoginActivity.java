@@ -32,13 +32,11 @@ public class LoginActivity extends AppCompatActivity {
             String usuario = etUsuario.getText().toString().trim();
             String clave = etClave.getText().toString().trim();
 
-            // Validación básica
             if (usuario.isEmpty() || clave.isEmpty()) {
                 Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Ir a HomeActivity (no MainActivity)
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();

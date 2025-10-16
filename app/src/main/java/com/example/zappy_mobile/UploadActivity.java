@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,10 @@ public class UploadActivity extends AppCompatActivity {
     private String pickedName = null;
     private DBHelper dbHelper;
 
+    // Navegación del footer
+    private LinearLayout btnHome, btnLibrary, btnCreate, btnProfile;
+    private ImageView btnSettings;
+
     private final ActivityResultLauncher<Intent> pickPdfLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
@@ -47,6 +53,7 @@ public class UploadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
 
+        // Vincular vistas existentes
         etTitle = findViewById(R.id.etTitle);
         etAuthor = findViewById(R.id.etAuthor);
         tvPicked = findViewById(R.id.tvPicked);
@@ -54,8 +61,41 @@ public class UploadActivity extends AppCompatActivity {
         btnUpload = findViewById(R.id.btnUpload);
         dbHelper = new DBHelper(this);
 
+        // Vincular botones del footer
+        btnHome = findViewById(R.id.btnHome);
+        btnLibrary = findViewById(R.id.btnLibrary);
+        btnCreate = findViewById(R.id.btnCreate);
+        btnProfile = findViewById(R.id.btnProfile);
+        btnSettings = findViewById(R.id.btnSettings);
+
+        // Funcionalidad existente
         btnPick.setOnClickListener(v -> pickPdf());
         btnUpload.setOnClickListener(v -> uploadPdf());
+
+        // Navegación del footer
+        btnHome.setOnClickListener(v -> {
+            startActivity(new Intent(UploadActivity.this, HomeActivity.class));
+            finish();
+        });
+
+        btnLibrary.setOnClickListener(v -> {
+            Toast.makeText(this, "Biblioteca (próximamente)", Toast.LENGTH_SHORT).show();
+        });
+
+        btnCreate.setOnClickListener(v -> {
+            Toast.makeText(this, "Ya estás en Crear", Toast.LENGTH_SHORT).show();
+        });
+
+        btnProfile.setOnClickListener(v -> {
+            startActivity(new Intent(UploadActivity.this, ProfileActivity.class));
+        });
+
+        // Botón configuración
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(v -> {
+                Toast.makeText(this, "Configuración (próximamente)", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
     private void pickPdf() {
@@ -125,4 +165,3 @@ public class UploadActivity extends AppCompatActivity {
         }
     }
 }
-
