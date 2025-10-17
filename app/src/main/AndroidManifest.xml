@@ -15,10 +15,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".RegistroActivity" android:exported="true" />
 
-        <activity android:name=".HomeActivity" android:exported="false" />
+        <activity android:name=".HomeActivity" android:exported="true" />
+
         <activity android:name=".ProfileActivity" android:exported="false" />
-        <activity android:name=".RegistroActivity" android:exported="false" />
         <activity android:name=".UploadActivity" android:exported="false" />
         <activity android:name=".PdfViewerActivity" android:exported="false" />
         <activity android:name=".SettingsActivity" android:exported="false" />

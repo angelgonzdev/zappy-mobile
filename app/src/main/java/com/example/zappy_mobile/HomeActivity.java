@@ -1,30 +1,12 @@
 package com.example.zappy_mobile;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
-public class HomeActivity extends AppCompatActivity implements ComicAdapter.OnItemClickListener {
-
-    private RecyclerView rvComics;
-    private DBHelper dbHelper;
-    private ComicAdapter adapter;
-    private Button btnCreate;
-    private LinearLayout btnHome, btnLibrary, btnCreateNav, btnProfile;
-    private ImageView btnSettings;
-
+public class HomeActivity extends AppCompatActivity {
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
