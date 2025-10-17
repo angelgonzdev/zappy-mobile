@@ -1,42 +1,64 @@
 package com.example.zappy_mobile;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class HomeActivity extends AppCompatActivity {
+import java.util.List;
+
+public class HomeActivity extends AppCompatActivity implements ComicAdapter.OnItemClickListener {
+
+    // Base de datos
+    private DBHelper dbHelper;
+
+    // RecyclerView
+    private RecyclerView rvComics;
+    private ComicAdapter adapter;
+
+    // Botones
+    private LinearLayout btnHome, btnLibrary, btnCreateNav, btnProfile;
+    private Button btnCreate; // botón central
+    private ImageView btnSettings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Inicialización
+        // Inicialización de DB y vistas
         dbHelper = new DBHelper(this);
         rvComics = findViewById(R.id.rvComics);
         btnCreate = findViewById(R.id.btnCreateComic);
         btnSettings = findViewById(R.id.btnSettings);
 
-        // Botones del footer
+        // Footer
         btnHome = findViewById(R.id.btnHome);
         btnLibrary = findViewById(R.id.btnLibrary);
         btnCreateNav = findViewById(R.id.btnCreate);
         btnProfile = findViewById(R.id.btnProfile);
 
-        // RecyclerView
+        // Configuración RecyclerView
         rvComics.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ComicAdapter(this);
         adapter.setOnItemClickListener(this);
         rvComics.setAdapter(adapter);
 
-        // Botón crear (centro de la pantalla)
+        // Botón crear central
         btnCreate.setOnClickListener(v -> openUpload());
 
-        // Botón de Configuración -> Abrir SettingsActivity
+        // Botón configuración
         btnSettings.setOnClickListener(v ->
                 startActivity(new Intent(HomeActivity.this, SettingsActivity.class))
         );
 
-        // Navegación footer
+        // Footer navigation
         btnHome.setOnClickListener(v ->
                 Toast.makeText(this, "Ya estás en Inicio", Toast.LENGTH_SHORT).show()
         );
