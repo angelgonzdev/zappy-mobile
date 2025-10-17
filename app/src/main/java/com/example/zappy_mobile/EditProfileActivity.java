@@ -30,8 +30,6 @@ public class EditProfileActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(EditProfileActivity.this, ProfileActivity.class);
             startActivity(intent);
-            overridePendingTransition(0, 0);
-            finish();
         });
 
         btnSaveChanges.setOnClickListener(v -> {

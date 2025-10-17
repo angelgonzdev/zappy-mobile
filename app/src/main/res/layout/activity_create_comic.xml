@@ -98,9 +98,12 @@
                 android:layout_marginBottom="20dp">
 
                 <ImageView
+                    android:id="@+id/btnAddCard"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@drawable/ic_add_card"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:tint="@color/black" />
 
                 <TextView

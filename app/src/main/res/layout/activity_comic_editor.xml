@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".ComicEditorActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/editor_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/white"
+        android:elevation="4dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_arrow"
+                android:padding="10dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Volver"
+                app:tint="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Editor de Página"
+                android:layout_gravity="center"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPublish"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="16dp"
+                android:text="Publicar"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:backgroundTint="@color/red_primary"
+                app:cornerRadius="20dp"/>
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:id="@+id/canvas_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_canvas_border"
+        app:layout_constraintTop_toBottomOf="@id/editor_header"
+        app:layout_constraintBottom_toTopOf="@id/tools_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Usa las herramientas para crear tu página"
+            android:textColor="@color/gray_dark"
+            android:gravity="center"
+            android:drawableTop="@drawable/ic_panel"
+            android:drawablePadding="8dp"
+            android:drawableTint="@color/gray_dark"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/tools_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:elevation="8dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:id="@+id/tool_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_edit"
+                app:tint="@color/black" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Texto"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tool_image"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_image"
+                app:tint="@color/black" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Imagen"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tool_balloon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_balloon"
+                app:tint="@color/black" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Globo"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tool_panel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_panel"
+                app:tint="@color/black" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Panel"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
