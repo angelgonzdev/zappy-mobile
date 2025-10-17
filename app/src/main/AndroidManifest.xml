@@ -8,7 +8,6 @@
         android:label="Zappy"
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
 
-        <!-- LoginActivity → actividad de inicio -->
         <activity android:name=".LoginActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -16,18 +15,19 @@
             </intent-filter>
         </activity>
 
-        <!-- RegistroActivity → abrir desde Login -->
         <activity android:name=".RegistroActivity" android:exported="true" />
 
-        <!-- HomeActivity → abrir desde Login -->
         <activity android:name=".HomeActivity" android:exported="true" />
 
-        <!-- Otras actividades internas -->
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".UploadActivity" android:exported="false" />
         <activity android:name=".PdfViewerActivity" android:exported="false" />
+        <activity android:name=".SettingsActivity" android:exported="false" />
+        <activity android:name=".LibraryActivity" android:exported="false" />
+        <activity android:name=".EditorActivity" android:exported="false"/>
+        <activity android:name=".EditProfileActivity" android:exported="false" />
+        <activity android:name=".CreateComicActivity" android:exported="false"/>
 
     </application>
 
-    
 </manifest>

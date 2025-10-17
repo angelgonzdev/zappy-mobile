@@ -75,11 +75,10 @@ public class UploadActivity extends AppCompatActivity {
         // Navegación del footer
         btnHome.setOnClickListener(v -> {
             startActivity(new Intent(UploadActivity.this, HomeActivity.class));
-            finish();
         });
 
         btnLibrary.setOnClickListener(v -> {
-            Toast.makeText(this, "Biblioteca (próximamente)", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(UploadActivity.this, LibraryActivity.class));
         });
 
         btnCreate.setOnClickListener(v -> {
@@ -91,11 +90,9 @@ public class UploadActivity extends AppCompatActivity {
         });
 
         // Botón configuración
-        if (btnSettings != null) {
-            btnSettings.setOnClickListener(v -> {
-                Toast.makeText(this, "Configuración (próximamente)", Toast.LENGTH_SHORT).show();
-            });
-        }
+        btnSettings.setOnClickListener(v ->
+                startActivity(new Intent(UploadActivity.this, SettingsActivity.class))
+        );
     }
 
     private void pickPdf() {
@@ -154,6 +151,8 @@ public class UploadActivity extends AppCompatActivity {
 
             if (id > 0) {
                 Toast.makeText(this, "Cómic subido correctamente", Toast.LENGTH_SHORT).show();
+                // Redirigir automáticamente a Biblioteca para ver el nuevo cómic
+                startActivity(new Intent(UploadActivity.this, LibraryActivity.class));
                 finish();
             } else {
                 Toast.makeText(this, "Error guardando en la base de datos", Toast.LENGTH_SHORT).show();

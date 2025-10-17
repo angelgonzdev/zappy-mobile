@@ -12,7 +12,7 @@ import com.google.android.material.button.MaterialButton;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private LinearLayout btnHome, btnLibrary, btnEdit, btnProfile;
+    private LinearLayout btnHome, btnLibrary, btnCreate, btnProfile;
     private MaterialButton btnEditProfile;
     private ImageView btnSettings;
 
@@ -24,38 +24,36 @@ public class ProfileActivity extends AppCompatActivity {
         // Vincular vistas
         btnHome = findViewById(R.id.btnHome);
         btnLibrary = findViewById(R.id.btnLibrary);
-        btnEdit = findViewById(R.id.btnEdit);
+        btnCreate = findViewById(R.id.btnEdit); // antes llamado btnEdit
         btnProfile = findViewById(R.id.btnProfile);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         btnSettings = findViewById(R.id.btnSettings);
 
-        // Navegación del footer
-        btnHome.setOnClickListener(v -> {
-            startActivity(new Intent(ProfileActivity.this, HomeActivity.class));
-            finish();
-        });
+        // Navegación footer
+        btnHome.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, HomeActivity.class))
+        );
 
-        btnLibrary.setOnClickListener(v -> {
-            Toast.makeText(this, "Biblioteca (próximamente)", Toast.LENGTH_SHORT).show();
-            // startActivity(new Intent(ProfileActivity.this, LibraryActivity.class));
-        });
+        btnLibrary.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, LibraryActivity.class))
+        );
 
-        btnEdit.setOnClickListener(v -> {
-            startActivity(new Intent(ProfileActivity.this, UploadActivity.class));
-        });
+        btnCreate.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, EditorActivity.class))
+        );
 
-        btnProfile.setOnClickListener(v -> {
-            Toast.makeText(this, "Ya estás en Perfil", Toast.LENGTH_SHORT).show();
-        });
+        btnProfile.setOnClickListener(v ->
+                Toast.makeText(this, "Ya estás en Perfil", Toast.LENGTH_SHORT).show()
+        );
 
         // Botón editar perfil
-        btnEditProfile.setOnClickListener(v -> {
-            Toast.makeText(this, "Editar perfil (próximamente)", Toast.LENGTH_SHORT).show();
-        });
+        btnEditProfile.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, EditProfileActivity.class))
+        );
 
-        // Botón configuración
-        btnSettings.setOnClickListener(v -> {
-            Toast.makeText(this, "Configuración (próximamente)", Toast.LENGTH_SHORT).show();
-        });
+        // Botón de Configuración -> Abrir SettingsActivity
+        btnSettings.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, SettingsActivity.class))
+        );
     }
 }
