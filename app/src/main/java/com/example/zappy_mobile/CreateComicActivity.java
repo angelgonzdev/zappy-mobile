@@ -8,11 +8,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class EditorActivity extends AppCompatActivity {
+public class CreateComicActivity extends AppCompatActivity {
 
-    private LinearLayout btnHome, btnLibrary, btnEdit, btnProfile;
+    // Footer buttons
+    private LinearLayout btnHome, btnLibrary, btnProfile;
     private ImageView btnSettings;
 
+    // Cuadro para añadir contenido
     private LinearLayout addContentCard;
 
     @Override
@@ -20,48 +22,37 @@ public class EditorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_comic);
 
+        // ====== Footer ======
         btnHome = findViewById(R.id.btnHome);
         btnLibrary = findViewById(R.id.btnLibrary);
-        btnEdit = findViewById(R.id.btnEdit);
         btnProfile = findViewById(R.id.btnProfile);
         btnSettings = findViewById(R.id.btnSettings);
 
+        // ====== Cuadro principal clickeable ======
         addContentCard = findViewById(R.id.addContentCard);
-
-        // CÓDIGO MODIFICADO PARA ABRIR CREATECOMICACTIVITY
         addContentCard.setOnClickListener(v -> {
-            Intent intent = new Intent(EditorActivity.this, CreateComicActivity.class);
+            Intent intent = new Intent(CreateComicActivity.this, EditorActivity.class);
             startActivity(intent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 
-        // FIN CÓDIGO MODIFICADO
-
+        // ====== Footer navigation ======
         btnHome.setOnClickListener(v ->
-                startActivity(new Intent(EditorActivity.this, HomeActivity.class))
+                startActivity(new Intent(CreateComicActivity.this, HomeActivity.class))
         );
 
         btnLibrary.setOnClickListener(v ->
-                startActivity(new Intent(EditorActivity.this, LibraryActivity.class))
-        );
-
-        btnEdit.setOnClickListener(v ->
-                Toast.makeText(this, "Ya estás en el editor ✏️", Toast.LENGTH_SHORT).show()
+                startActivity(new Intent(CreateComicActivity.this, LibraryActivity.class))
         );
 
         btnProfile.setOnClickListener(v ->
-                startActivity(new Intent(EditorActivity.this, ProfileActivity.class))
+                startActivity(new Intent(CreateComicActivity.this, ProfileActivity.class))
         );
 
+        // Configuración
         btnSettings.setOnClickListener(v -> {
-            startActivity(new Intent(EditorActivity.this, SettingsActivity.class));
+            startActivity(new Intent(CreateComicActivity.this, SettingsActivity.class));
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }
