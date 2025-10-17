@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <!-- Header -->
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -14,7 +13,9 @@
         android:orientation="horizontal"
         android:padding="16dp"
         android:gravity="center_vertical"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:layout_width="0dp"
@@ -22,15 +23,19 @@
             android:layout_weight="1"
             android:text="Zappy ⚡"
             android:textSize="24sp"
-            android:textColor="#E53935"
+            android:textColor="@color/red_primary"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/btnSettings"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@android:drawable/ic_menu_manage"
-            android:contentDescription="Configuración" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_config"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Settings" />
     </LinearLayout>
 
     <!-- ScrollView con contenido -->

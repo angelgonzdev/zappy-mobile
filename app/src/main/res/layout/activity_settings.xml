@@ -98,16 +98,33 @@
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="8dp"
         android:background="#FFE5DE"
-        android:gravity="center">
+        android:gravity="center"
+        android:weightSum="2">
 
-        <!-- Botón Cerrar Sesión -->
+        <!-- Botón Volver -->
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="← Volver"
+            android:textColor="#E66A5A"
+            android:backgroundTint="#FFFFFF"
+            android:background="@drawable/btn_outline_red"
+            android:elevation="0dp" />
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="match_parent" />
+
         <Button
             android:id="@+id/btnLogout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:text="Cerrar sesión"
             android:textColor="#FFFFFF"
             android:backgroundTint="#E66A5A" />

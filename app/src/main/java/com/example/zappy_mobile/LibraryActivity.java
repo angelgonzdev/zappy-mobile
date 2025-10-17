@@ -54,7 +54,7 @@ public class LibraryActivity extends AppCompatActivity implements ComicAdapter.O
         );
 
         btnCreate.setOnClickListener(v ->
-                startActivity(new Intent(LibraryActivity.this, UploadActivity.class))
+                startActivity(new Intent(LibraryActivity.this, EditorActivity.class))
         );
 
         btnProfile.setOnClickListener(v ->

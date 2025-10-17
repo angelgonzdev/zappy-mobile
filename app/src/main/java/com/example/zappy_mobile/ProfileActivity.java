@@ -29,34 +29,31 @@ public class ProfileActivity extends AppCompatActivity {
         btnEditProfile = findViewById(R.id.btnEditProfile);
         btnSettings = findViewById(R.id.btnSettings);
 
-        // Navegación del footer
-        btnHome.setOnClickListener(v -> {
-            startActivity(new Intent(ProfileActivity.this, HomeActivity.class));
-            finish();
-        });
+        // Navegación footer
+        btnHome.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, HomeActivity.class))
+        );
 
-        btnLibrary.setOnClickListener(v -> {
-            startActivity(new Intent(ProfileActivity.this, LibraryActivity.class));
-            finish();
-        });
+        btnLibrary.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, LibraryActivity.class))
+        );
 
-        btnCreate.setOnClickListener(v -> {
-            startActivity(new Intent(ProfileActivity.this, UploadActivity.class));
-            finish();
-        });
+        btnCreate.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, EditorActivity.class))
+        );
 
-        btnProfile.setOnClickListener(v -> {
-            Toast.makeText(this, "Ya estás en Perfil", Toast.LENGTH_SHORT).show();
-        });
+        btnProfile.setOnClickListener(v ->
+                Toast.makeText(this, "Ya estás en Perfil", Toast.LENGTH_SHORT).show()
+        );
 
         // Botón editar perfil
-        btnEditProfile.setOnClickListener(v -> {
-            Toast.makeText(this, "Editar perfil (próximamente)", Toast.LENGTH_SHORT).show();
-        });
+        btnEditProfile.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, EditProfileActivity.class))
+        );
 
-        // Botón configuración
-        btnSettings.setOnClickListener(v -> {
-            Toast.makeText(this, "Configuración (próximamente)", Toast.LENGTH_SHORT).show();
-        });
+        // Botón de Configuración -> Abrir SettingsActivity
+        btnSettings.setOnClickListener(v ->
+                startActivity(new Intent(ProfileActivity.this, SettingsActivity.class))
+        );
     }
 }

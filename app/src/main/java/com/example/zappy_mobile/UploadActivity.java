@@ -75,12 +75,10 @@ public class UploadActivity extends AppCompatActivity {
         // Navegación del footer
         btnHome.setOnClickListener(v -> {
             startActivity(new Intent(UploadActivity.this, HomeActivity.class));
-            finish();
         });
 
         btnLibrary.setOnClickListener(v -> {
             startActivity(new Intent(UploadActivity.this, LibraryActivity.class));
-            finish();
         });
 
         btnCreate.setOnClickListener(v -> {
@@ -89,15 +87,12 @@ public class UploadActivity extends AppCompatActivity {
 
         btnProfile.setOnClickListener(v -> {
             startActivity(new Intent(UploadActivity.this, ProfileActivity.class));
-            finish();
         });
 
-        // Botón configuración (opcional)
-        if (btnSettings != null) {
-            btnSettings.setOnClickListener(v -> {
-                Toast.makeText(this, "Configuración (próximamente)", Toast.LENGTH_SHORT).show();
-            });
-        }
+        // Botón configuración
+        btnSettings.setOnClickListener(v ->
+                startActivity(new Intent(UploadActivity.this, SettingsActivity.class))
+        );
     }
 
     private void pickPdf() {
