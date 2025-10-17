@@ -1,3 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">zappy_mobile</string>
+    <string name="settings">Configuración</string>
+    <string name="app_name">Zappy</string>
+    <string name="project_icon">Ícono del proyecto</string>
 </resources>
