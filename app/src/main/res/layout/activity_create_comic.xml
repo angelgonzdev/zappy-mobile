@@ -93,6 +93,8 @@
                 android:id="@+id/addContentCard"
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:background="@drawable/bg_card_rounded_gray"
                 android:gravity="center"
                 android:orientation="vertical"
