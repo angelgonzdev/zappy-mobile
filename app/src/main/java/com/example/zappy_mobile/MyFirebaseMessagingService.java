@@ -28,6 +28,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void lanzarNotificacion(String titulo, String cuerpo) {
         String channelId = "canal_push_zappy";
 
+
+
+
         // Crear canal (Android 8+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
