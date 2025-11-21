@@ -41,7 +41,7 @@
             android:layout_marginBottom="20dp" />
 
         <EditText
-            android:id="@+id/etUsuario"
+            android:id="@+id/etCorreo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Usuario o Correo electrónico"
