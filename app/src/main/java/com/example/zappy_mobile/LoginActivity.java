@@ -42,16 +42,18 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(LoginActivity.this, RegistroActivity.class));
         });
 
-        btnIniciarSesion.setOnClickListener(v -> {
-            String email = etCorreo.getText().toString().trim();
-            String password = etClave.getText().toString().trim();
+       btnIniciarSesion.setOnClickListener(v -> {
+    String email = etCorreo.getText().toString().trim();
+    String password = etClave.getText().toString().trim();
 
-            if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                Toast.makeText(this, "Completa los campos", Toast.LENGTH_SHORT).show();
-                return;
-            }
+    if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+        Toast.makeText(this, "Completa los campos", Toast.LENGTH_SHORT).show();
+        return;
+    }
 
-            loginUsuario(email, password);
+    loginUsuario(email, password);
+});
+
         });
     }
 
@@ -90,8 +92,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void irAHome() {
-        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-        finish();
+
+        // Botón ir a registro
+        btnIrRegistro.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RegistroActivity.class)));
     }
 }
