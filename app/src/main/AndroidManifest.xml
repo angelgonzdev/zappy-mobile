@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.zappy_mobile">
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -13,17 +14,29 @@
         android:label="Zappy"
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
 
-        <activity android:name=".LoginActivity" android:exported="true">
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+
+        <!-- 1. REGISTRO: Ahora tiene el INTENT-FILTER para ser la primera -->
+        <activity
+            android:name=".RegistroActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".RegistroActivity" android:exported="true" />
+        <!-- 2. LOGIN: Ya no es la principal, le quitamos el filtro -->
+        <activity android:name=".LoginActivity" android:exported="true" />
 
         <activity android:name=".HomeActivity" android:exported="true" />
-
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".UploadActivity" android:exported="false" />
         <activity android:name=".PdfViewerActivity" android:exported="false" />

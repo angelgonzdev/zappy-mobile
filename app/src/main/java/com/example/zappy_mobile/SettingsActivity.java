@@ -29,6 +29,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+// IMPORTANTE: Importar Firebase Auth
+import com.google.firebase.auth.FirebaseAuth;
+
 public class SettingsActivity extends AppCompatActivity {
 
     private Button btnLogout, btnBack, btnToggleBrightnessSensor;
@@ -101,9 +104,17 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         btnLogout.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+            // 1. CERRAR SESIÓN EN FIREBASE (Crucial)
+            FirebaseAuth.getInstance().signOut();
+
+            // 2. Redirigir al REGISTRO (como pediste)
+            Intent intent = new Intent(SettingsActivity.this, RegistroActivity.class);
+
+            // 3. Limpiar el historial para que no pueda volver atrás
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
             startActivity(intent);
+            finish(); // Cierra esta actividad actual
         });
 
         btnBack.setOnClickListener(v -> onBackPressed());

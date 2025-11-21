@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "145751516568",
+    "project_id": "zappymobile-2df05",
+    "storage_bucket": "zappymobile-2df05.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145751516568:android:ba3296f5dcda0c7ae7f7ed",
+        "android_client_info": {
+          "package_name": "com.example.zappy_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOSVe_XaqJVNpllA7OSdDwX2jER5rTQw0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

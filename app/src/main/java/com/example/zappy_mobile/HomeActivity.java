@@ -1,7 +1,9 @@
 package com.example.zappy_mobile;
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -26,6 +29,12 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity
@@ -43,19 +52,17 @@ public class HomeActivity extends AppCompatActivity
     private float acelLast;
     private float shake;
 
-    // Último valor de lux y handler para actualizar cada 2 minutos
     private float currentLux = 0f;
     private Handler luxHandler = new Handler();
     private Runnable luxRunnable;
 
-    // Base de datos
-    private DBHelper dbHelper;
+    // Firebase
+    private FirebaseFirestore db;
 
-    // RecyclerView
+    // UI
     private RecyclerView rvComics;
     private ComicAdapter adapter;
 
-    // Botones
     private LinearLayout btnHome, btnLibrary, btnCreateNav, btnProfile;
     private Button btnCreate;
     private ImageView btnSettings;
@@ -64,42 +71,43 @@ public class HomeActivity extends AppCompatActivity
     private int notifCounter = 0;
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            irAlLogin();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Permisos de notificación
-        askNotificationPermission();
-
-        // Canal de notificaciones
-        createNotificationChannel();
-
-        // Sensores
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sensorManager.registerListener(
-                this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_NORMAL
-        );
-
-        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-
-        acelVal = SensorManager.GRAVITY_EARTH;
-        acelLast = SensorManager.GRAVITY_EARTH;
-        shake = 0.00f;
-
-        // Preferencias
-        SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
-        brightnessSensorEnabled = prefs.getBoolean("brightness_sensor_enabled", false);
-
-        if (brightnessSensorEnabled && lightSensor != null) {
-            sensorManager.registerListener(lightListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            irAlLogin();
+            return;
         }
 
-        // Base de datos
-        dbHelper = new DBHelper(this);
+        // --- NOTIFICACIÓN DE BIENVENIDA ---
+        if (savedInstanceState == null) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            String nombre = user != null && user.getDisplayName() != null ? user.getDisplayName() : "";
+            String mensaje = nombre.isEmpty()
+                    ? "Bienvenido a Zappy ⚡"
+                    : "Bienvenido a Zappy, " + nombre + " ⚡";
 
-        // Vistas
+            lanzarNotificacionSistema("¡Hola!", mensaje);
+        }
+
+        // Inicializar Firestore
+        db = FirebaseFirestore.getInstance();
+
+        // Inicializar sensores
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        brightnessSensorEnabled = lightSensor != null;
+
+        // Inicializar UI
         rvComics = findViewById(R.id.rvComics);
         btnCreate = findViewById(R.id.btnCreateComic);
         btnSettings = findViewById(R.id.btnSettings);
@@ -109,32 +117,27 @@ public class HomeActivity extends AppCompatActivity
         btnCreateNav = findViewById(R.id.btnCreate);
         btnProfile = findViewById(R.id.btnProfile);
 
-        // Config RecyclerView
+        // RecyclerView
         rvComics.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ComicAdapter(this);
         adapter.setOnItemClickListener(this);
         rvComics.setAdapter(adapter);
 
-        // Acciones
+        // Listeners navegación
         btnCreate.setOnClickListener(v -> openUpload());
-        btnSettings.setOnClickListener(v ->
-                startActivity(new Intent(HomeActivity.this, SettingsActivity.class)));
-        btnHome.setOnClickListener(v ->
-                Toast.makeText(this, "Ya estás en Inicio", Toast.LENGTH_SHORT).show());
-        btnLibrary.setOnClickListener(v ->
-                startActivity(new Intent(HomeActivity.this, LibraryActivity.class)));
-        btnCreateNav.setOnClickListener(v ->
-                startActivity(new Intent(HomeActivity.this, EditorActivity.class)));
-        btnProfile.setOnClickListener(v ->
-                startActivity(new Intent(HomeActivity.this, ProfileActivity.class)));
+        btnSettings.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, SettingsActivity.class)));
+        btnHome.setOnClickListener(v -> Toast.makeText(this, "Ya estás en Inicio", Toast.LENGTH_SHORT).show());
+        btnLibrary.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, LibraryActivity.class)));
+        btnCreateNav.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, EditorActivity.class)));
+        btnProfile.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, ProfileActivity.class)));
 
-        // Cargar comics
+        // Cargar cómics
         loadComics();
 
-        // Iniciar notificaciones programadas
+        // Iniciar notificaciones aleatorias
         startScheduledNotifications();
 
-        // Runnable para mostrar mensaje de luz cada 2 minutos
+        // Runnable para luz
         luxRunnable = new Runnable() {
             @Override
             public void run() {
@@ -143,10 +146,12 @@ public class HomeActivity extends AppCompatActivity
                 } else if (currentLux > 1000) {
                     Toast.makeText(HomeActivity.this, "Ambiente muy iluminado ☀️", Toast.LENGTH_SHORT).show();
                 }
-                luxHandler.postDelayed(this, 120000); // 2 minutos
+                luxHandler.postDelayed(this, 120000);
             }
         };
-        luxHandler.postDelayed(luxRunnable, 120000); // iniciar primera vez
+        luxHandler.postDelayed(luxRunnable, 120000);
+
+        createNotificationChannel();
     }
 
     // Listener de luz
@@ -156,61 +161,66 @@ public class HomeActivity extends AppCompatActivity
             currentLux = event.values[0];
             float brightness = Math.min(1f, Math.max(0.1f, currentLux / 200f));
 
-            WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-            layoutParams.screenBrightness = brightness;
-            getWindow().setAttributes(layoutParams);
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.screenBrightness = brightness;
+            getWindow().setAttributes(lp);
         }
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {}
     };
 
-    private void resetAppBrightness() {
-        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-        layoutParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
-        getWindow().setAttributes(layoutParams);
-    }
+    private void lanzarNotificacionSistema(String titulo, String contenido) {
+        String channelId = "canal_bienvenida";
 
-    // Permiso de notificación
-    private void askNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                requestPermissions(
-                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS},
-                        NOTIFICATION_PERMISSION_CODE
-                );
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Notificaciones de Bienvenida",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) manager.createNotificationChannel(channel);
         }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle(titulo)
+                .setContentText(contenido)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            return;
+        }
+
+        NotificationManagerCompat.from(this).notify(1, builder.build());
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == NOTIFICATION_PERMISSION_CODE) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permiso de notificación concedido ✔", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Debes permitirlo para ver notificaciones", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         sensorManager.registerListener(
                 this,
                 sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL
         );
+
         if (brightnessSensorEnabled && lightSensor != null) {
             sensorManager.registerListener(lightListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
+
         luxHandler.postDelayed(luxRunnable, 120000);
-        loadComics();
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            loadComics();
+        }
     }
 
     @Override
@@ -229,7 +239,7 @@ public class HomeActivity extends AppCompatActivity
         if (lightSensor != null) sensorManager.unregisterListener(lightListener);
     }
 
-    // Sensor shake
+    // Shake
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -238,24 +248,20 @@ public class HomeActivity extends AppCompatActivity
             float z = event.values[2];
 
             acelLast = acelVal;
-            acelVal = (float) Math.sqrt((double) (x * x + y * y + z * z));
+            acelVal = (float) Math.sqrt(x * x + y * y + z * z);
             float delta = acelVal - acelLast;
             shake = shake * 0.9f + delta;
 
-            if (shake > 12) {
-                showShakeNotification();
-            }
+            if (shake > 12) showShakeNotification();
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
-    // Notificación shake
     private void showShakeNotification() {
         SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
-        boolean notifEnabled = prefs.getBoolean("notifications_enabled", true);
-        if (!notifEnabled) return;
+        if (!prefs.getBoolean("notifications_enabled", true)) return;
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification)
@@ -263,27 +269,37 @@ public class HomeActivity extends AppCompatActivity
                 .setContentText("Sacudiste el dispositivo 📱✨")
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
-        manager.notify(1, builder.build());
+        NotificationManagerCompat.from(this).notify(1, builder.build());
     }
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Shake Channel";
-            String description = "Notificaciones al detectar movimiento";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Shake Channel",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Notificaciones al detectar movimiento");
 
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
         }
     }
 
     private void loadComics() {
-        List<Comic> list = dbHelper.getAllComics();
-        adapter.setComics(list);
+        db.collection("comics").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Comic> list = new ArrayList<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    try {
+                        list.add(document.toObject(Comic.class));
+                    } catch (Exception ignored) {}
+                }
+                adapter.setComics(list);
+            } else {
+                Toast.makeText(HomeActivity.this, "Error cargando datos", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void openUpload() {
@@ -303,8 +319,8 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void run() {
                 SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
-                boolean notifEnabled = prefs.getBoolean("notifications_enabled", true);
-                if (notifEnabled) sendRandomZappyNotification();
+                if (prefs.getBoolean("notifications_enabled", true))
+                    sendRandomZappyNotification();
                 handler.postDelayed(this, 20000);
             }
         }, 20000);
@@ -313,16 +329,16 @@ public class HomeActivity extends AppCompatActivity
     private void sendRandomZappyNotification() {
         notifCounter++;
         NotificationCompat.Builder builder;
-        NotificationManagerCompat manager = NotificationManagerCompat.from(this);
 
         switch (notifCounter % 4) {
             case 0:
                 builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle("✨ ¡Novedades Zappy!")
-                        .setContentText("Nuevo cómic recomendado especialmente para ti.")
+                        .setContentText("Nuevo cómic recomendado para ti.")
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
                 break;
+
             case 1:
                 builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_notification)
@@ -330,23 +346,37 @@ public class HomeActivity extends AppCompatActivity
                         .setContentText("Continúa leyendo donde lo dejaste 🦸‍♂️.")
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
                 break;
+
             case 2:
                 builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle("🔥 Zappy: Destacado del día")
-                        .setContentText("Mira esta ilustración increíble!")
+                        .setContentText("¡Mira esta ilustración increíble!")
                         .setStyle(new NotificationCompat.BigPictureStyle()
-                                .bigPicture(BitmapFactory.decodeResource(getResources(), R.drawable.deedpool)))
+                                .bigPicture(BitmapFactory.decodeResource(
+                                        getResources(), R.drawable.deedpool)))
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
                 break;
+
             default:
                 builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle("⚡ Zappy te acompaña")
-                        .setContentText("¿Probaste ya el creador de cómics?")
+                        .setContentText("¿Ya probaste el creador de cómics?")
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
                 break;
         }
-        manager.notify((int) System.currentTimeMillis(), builder.build());
+
+        NotificationManagerCompat.from(this)
+                .notify((int) System.currentTimeMillis(), builder.build());
+    }
+
+    private void irAlLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }
