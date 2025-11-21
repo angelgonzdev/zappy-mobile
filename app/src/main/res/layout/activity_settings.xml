@@ -138,6 +138,17 @@
                         android:layout_height="wrap_content" />
                 </LinearLayout>
 
+                <!-- 🚀 NUEVO BOTÓN PARA UBICACIÓN -->
+                <Button
+                    android:id="@+id/btnGetLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Obtener ubicación actual"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#4CAF50"
+                    android:elevation="2dp" />
+
                 <Button
                     android:id="@+id/btnToggleBrightnessSensor"
                     android:layout_width="match_parent"
@@ -148,6 +159,7 @@
                     android:backgroundTint="#E66A5A"
                     android:elevation="2dp" />
             </LinearLayout>
+
 
         </LinearLayout>
     </ScrollView>
