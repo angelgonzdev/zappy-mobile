@@ -111,17 +111,19 @@ public class RegistroActivity extends AppCompatActivity {
                 .document(uid)
                 .set(userData)
                 .addOnSuccessListener(aVoid -> {
-                    // ¡ÉXITO TOTAL!
-                    // Mostramos la alerta y cuando le de OK, lo mandamos al Login
-                    mostrarAlerta("¡Registro Exitoso!", "Se ha registrado correctamente.", true);
-
-                    // Opcional: Cerrar sesión automáticamente para obligarlo a loguearse
-                    mAuth.signOut();
+                    // FORZAMOS QUE CORRA EN LA UI DE LA ACTIVIDAD
+                    runOnUiThread(() -> {
+                        mostrarAlerta("¡Registro Exitoso!", "Se ha registrado correctamente.", true);
+                        mAuth.signOut();
+                    });
                 })
                 .addOnFailureListener(e -> {
-                    mostrarAlerta("Error", "Usuario creado pero falló al guardar datos: " + e.getMessage(), false);
+                    runOnUiThread(() -> {
+                        mostrarAlerta("Error", "Fallo al guardar en base de datos: " + e.getMessage(), false);
+                    });
                 });
     }
+
 
     // --- MÉTODO PARA MOSTRAR ALERTAS ---
     private void mostrarAlerta(String titulo, String mensaje, boolean irAlLoginAlCerrar) {

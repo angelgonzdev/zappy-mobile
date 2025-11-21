@@ -4,7 +4,7 @@ plugins {
 
     // Este es el plugin necesario para que Firebase funcione
     id("com.google.gms.google-services")
-    id ("com.google.firebase.crashlytics")
+    id("com.google.firebase.crashlytics")
 }
 
 android {    namespace = "com.example.zappy_mobile"
@@ -46,8 +46,10 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth") // Para Login
     implementation("com.google.firebase:firebase-firestore") // Para Base de datos
-
+    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     // --- Android UI ---
+    implementation("com.google.firebase:firebase-crashlytics-ndk")
+    implementation("com.google.firebase:firebase-analytics")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.activity:activity:1.8.2") // Versión estable
