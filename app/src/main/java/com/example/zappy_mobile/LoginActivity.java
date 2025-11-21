@@ -30,22 +30,28 @@ public class LoginActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
 
         // Botón iniciar sesión
-        btnIniciarSesion.setOnClickListener(v -> {
-            String username = etUsuario.getText().toString().trim();
-            String password = etClave.getText().toString().trim();
+        // btnIniciarSesion.setOnClickListener(v -> {
+//     String username = etUsuario.getText().toString().trim();
+//     String password = etClave.getText().toString().trim();
+//
+//     if(username.isEmpty() || password.isEmpty()){
+//         Toast.makeText(this, "Ingrese usuario y contraseña", Toast.LENGTH_SHORT).show();
+//     } else {
+//         boolean loginOk = dbHelper.checkUser(username, password);
+//         if(loginOk){
+//             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+//             finish();
+//         } else {
+//             Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+//         }
+//     }
+// });
 
-            if(username.isEmpty() || password.isEmpty()){
-                Toast.makeText(this, "Ingrese usuario y contraseña", Toast.LENGTH_SHORT).show();
-            } else {
-                boolean loginOk = dbHelper.checkUser(username, password);
-                if(loginOk){
-                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                    finish();
-                } else {
-                    Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
-                }
-            }
+        btnIniciarSesion.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+            finish();
         });
+
 
         // Botón ir a registro
         btnIrRegistro.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RegistroActivity.class)));

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootMain"
@@ -9,7 +8,7 @@
     android:background="#FFFFFF"
     tools:context=".HomeActivity">
 
-    <!-- ================= HEADER ================= -->
+    <!-- HEADER -->
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -19,6 +18,7 @@
         android:gravity="center_vertical">
 
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -35,11 +35,10 @@
             android:src="@drawable/ic_config"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Settings" />
+            android:focusable="true" />
     </LinearLayout>
 
-    <!-- ================= CONTENIDO PRINCIPAL ================= -->
+    <!-- CUERPO -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -49,7 +48,7 @@
         android:padding="14dp"
         android:paddingBottom="80dp">
 
-        <!-- ================= TITULOS ================= -->
+        <!-- TÍTULO -->
         <TextView
             android:id="@+id/tvCreate"
             android:layout_width="wrap_content"
@@ -57,7 +56,6 @@
             android:text="Crea tu historia"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:lineSpacingExtra="6dp"
             android:layout_marginBottom="8dp"
             android:textColor="#000000" />
 
@@ -65,22 +63,19 @@
             android:id="@+id/tvSub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Descubre y crea increíbles cómics y novelas gráficas"
+            android:text="Descubre y crea increíbles cómics"
             android:textSize="14sp"
             android:textColor="#666666"
-            android:lineSpacingExtra="6dp"
             android:layout_marginBottom="20dp" />
 
-        <!-- ================= IMAGEN DESTACADA ================= -->
         <ImageView
             android:id="@+id/imgFeatured"
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:scaleType="centerCrop"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/superman" />
+            android:src="@drawable/nascar" />
 
-        <!-- ================= BOTÓN PRINCIPAL ================= -->
         <Button
             android:id="@+id/btnCreateComic"
             android:layout_width="match_parent"
@@ -91,7 +86,6 @@
             android:backgroundTint="#E66A5A"
             android:layout_marginBottom="24dp" />
 
-        <!-- ================= LISTA ================= -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvComics"
             android:layout_width="match_parent"
@@ -103,7 +97,7 @@
 
     </LinearLayout>
 
-    <!-- ================= BOTTOM BAR ================= -->
+    <!-- BOTTOM NAV -->
     <LinearLayout
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
@@ -115,16 +109,13 @@
         android:elevation="8dp"
         android:layout_alignParentBottom="true">
 
-        <!-- Botón Inicio -->
         <LinearLayout
             android:id="@+id/btnHome"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
@@ -132,16 +123,13 @@
                 app:tint="@color/white" />
         </LinearLayout>
 
-        <!-- Botón Biblioteca -->
         <LinearLayout
             android:id="@+id/btnLibrary"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
@@ -149,7 +137,6 @@
                 app:tint="@color/white" />
         </LinearLayout>
 
-        <!-- Botón Crear -->
         <LinearLayout
             android:id="@+id/btnCreate"
             android:layout_width="0dp"
@@ -157,7 +144,6 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
@@ -165,23 +151,20 @@
                 app:tint="@color/white" />
         </LinearLayout>
 
-        <!-- Botón Perfil -->
         <LinearLayout
             android:id="@+id/btnProfile"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_profile"
                 app:tint="@color/white" />
         </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>
-

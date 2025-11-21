@@ -30,26 +30,29 @@
             android:shadowRadius="4" />
     </LinearLayout>
 
-    <!-- ================= SPACER DECORATIVO ================= -->
-    <View
+    <!-- ================= SEARCH BAR ================= -->
+    <SearchView
+        android:id="@+id/searchBar"
         android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:background="#FFE5DE"
-        android:layout_below="@id/header" />
+        android:layout_height="55dp"
+        android:queryHint="Buscar por título o autor..."
+        android:layout_below="@id/header"
+        android:background="#FFFFFF"
+        android:iconifiedByDefault="false"
+        android:padding="6dp" />
 
-    <!-- ================= RECYCLERVIEW ================= -->
+    <!-- ================= RECYCLER ================= -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLibrary"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header"
+        android:layout_below="@id/searchBar"
         android:layout_above="@+id/bottom_nav"
         android:padding="12dp"
         android:clipToPadding="false"
-        android:scrollbars="vertical"
-        android:background="#FFF5F0" />
+        android:scrollbars="vertical" />
 
-    <!-- ================= BOTTOM BAR ================= -->
+    <!-- ================= BOTTOM NAV ================= -->
     <LinearLayout
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
@@ -61,41 +64,34 @@
         android:weightSum="4"
         android:elevation="8dp">
 
-        <!-- Botón Inicio -->
         <LinearLayout
             android:id="@+id/btnHome"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_home"
-                app:tint="@color/white" />
+                app:tint="@color/white"/>
         </LinearLayout>
 
-        <!-- Botón Biblioteca -->
         <LinearLayout
             android:id="@+id/btnLibrary"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_library"
-                app:tint="@color/white" />
+                app:tint="@color/white"/>
         </LinearLayout>
 
-        <!-- Botón Crear -->
         <LinearLayout
             android:id="@+id/btnCreate"
             android:layout_width="0dp"
@@ -103,31 +99,26 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_edit"
-                app:tint="@color/white" />
+                app:tint="@color/white"/>
         </LinearLayout>
 
-        <!-- Botón Perfil -->
         <LinearLayout
             android:id="@+id/btnProfile"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_profile"
-                app:tint="@color/white" />
+                app:tint="@color/white"/>
         </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>
-
