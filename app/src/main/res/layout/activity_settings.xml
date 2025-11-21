@@ -137,6 +137,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnToggleBrightnessSensor"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Activar sensor de brillo"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#E66A5A"
+                    android:elevation="2dp" />
             </LinearLayout>
 
         </LinearLayout>

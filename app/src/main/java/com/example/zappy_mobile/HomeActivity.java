@@ -8,16 +8,18 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -34,9 +36,17 @@ public class HomeActivity extends AppCompatActivity
 
     // Sensores
     private SensorManager sensorManager;
+    private Sensor lightSensor;
+    private boolean brightnessSensorEnabled = false;
+
     private float acelVal;
     private float acelLast;
     private float shake;
+
+    // Último valor de lux y handler para actualizar cada 2 minutos
+    private float currentLux = 0f;
+    private Handler luxHandler = new Handler();
+    private Runnable luxRunnable;
 
     // Base de datos
     private DBHelper dbHelper;
@@ -50,8 +60,7 @@ public class HomeActivity extends AppCompatActivity
     private Button btnCreate;
     private ImageView btnSettings;
 
-    // Handler para notificaciones programadas
-    private android.os.Handler handler = new android.os.Handler();
+    private Handler handler = new Handler();
     private int notifCounter = 0;
 
     @Override
@@ -59,13 +68,13 @@ public class HomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // ================= PERMISOS DE NOTIFICACIÓN =================
+        // Permisos de notificación
         askNotificationPermission();
 
-        // ================= CREAR CANAL =================
+        // Canal de notificaciones
         createNotificationChannel();
 
-        // ================= SENSORES =================
+        // Sensores
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorManager.registerListener(
                 this,
@@ -73,14 +82,24 @@ public class HomeActivity extends AppCompatActivity
                 SensorManager.SENSOR_DELAY_NORMAL
         );
 
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+
         acelVal = SensorManager.GRAVITY_EARTH;
         acelLast = SensorManager.GRAVITY_EARTH;
         shake = 0.00f;
 
-        // ============= BASE DE DATOS ============
+        // Preferencias
+        SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
+        brightnessSensorEnabled = prefs.getBoolean("brightness_sensor_enabled", false);
+
+        if (brightnessSensorEnabled && lightSensor != null) {
+            sensorManager.registerListener(lightListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+
+        // Base de datos
         dbHelper = new DBHelper(this);
 
-        // ============= VISTAS =============
+        // Vistas
         rvComics = findViewById(R.id.rvComics);
         btnCreate = findViewById(R.id.btnCreateComic);
         btnSettings = findViewById(R.id.btnSettings);
@@ -90,13 +109,13 @@ public class HomeActivity extends AppCompatActivity
         btnCreateNav = findViewById(R.id.btnCreate);
         btnProfile = findViewById(R.id.btnProfile);
 
-        // ============= CONFIG RV ============
+        // Config RecyclerView
         rvComics.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new ComicAdapter(this);
         adapter.setOnItemClickListener(this);
         rvComics.setAdapter(adapter);
 
-        // ============= ACCIONES ============
+        // Acciones
         btnCreate.setOnClickListener(v -> openUpload());
         btnSettings.setOnClickListener(v ->
                 startActivity(new Intent(HomeActivity.this, SettingsActivity.class)));
@@ -114,9 +133,45 @@ public class HomeActivity extends AppCompatActivity
 
         // Iniciar notificaciones programadas
         startScheduledNotifications();
+
+        // Runnable para mostrar mensaje de luz cada 2 minutos
+        luxRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (currentLux < 10) {
+                    Toast.makeText(HomeActivity.this, "Ambiente oscuro 🌙", Toast.LENGTH_SHORT).show();
+                } else if (currentLux > 1000) {
+                    Toast.makeText(HomeActivity.this, "Ambiente muy iluminado ☀️", Toast.LENGTH_SHORT).show();
+                }
+                luxHandler.postDelayed(this, 120000); // 2 minutos
+            }
+        };
+        luxHandler.postDelayed(luxRunnable, 120000); // iniciar primera vez
     }
 
-    // =================== PERMISO DE NOTIFICACIONES ===================
+    // Listener de luz
+    private final SensorEventListener lightListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            currentLux = event.values[0];
+            float brightness = Math.min(1f, Math.max(0.1f, currentLux / 200f));
+
+            WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+            layoutParams.screenBrightness = brightness;
+            getWindow().setAttributes(layoutParams);
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+    };
+
+    private void resetAppBrightness() {
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+        getWindow().setAttributes(layoutParams);
+    }
+
+    // Permiso de notificación
     private void askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
@@ -133,7 +188,6 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == NOTIFICATION_PERMISSION_CODE) {
             if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -152,6 +206,10 @@ public class HomeActivity extends AppCompatActivity
                 sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL
         );
+        if (brightnessSensorEnabled && lightSensor != null) {
+            sensorManager.registerListener(lightListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+        luxHandler.postDelayed(luxRunnable, 120000);
         loadComics();
     }
 
@@ -159,36 +217,41 @@ public class HomeActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        if (lightSensor != null) sensorManager.unregisterListener(lightListener);
+        luxHandler.removeCallbacks(luxRunnable);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
+        luxHandler.removeCallbacks(luxRunnable);
+        if (lightSensor != null) sensorManager.unregisterListener(lightListener);
     }
 
-    // ================== SENSOR SHAKE ==================
+    // Sensor shake
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
 
-        acelLast = acelVal;
-        acelVal = (float) Math.sqrt((double) (x * x + y * y + z * z));
+            acelLast = acelVal;
+            acelVal = (float) Math.sqrt((double) (x * x + y * y + z * z));
+            float delta = acelVal - acelLast;
+            shake = shake * 0.9f + delta;
 
-        float delta = acelVal - acelLast;
-        shake = shake * 0.9f + delta;
-
-        if (shake > 12) {  // sensibilidad
-            showShakeNotification();
+            if (shake > 12) {
+                showShakeNotification();
+            }
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
-    // ================== NOTIFICACIÓN SHAKE ==================
+    // Notificación shake
     private void showShakeNotification() {
         SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
         boolean notifEnabled = prefs.getBoolean("notifications_enabled", true);
@@ -204,24 +267,20 @@ public class HomeActivity extends AppCompatActivity
         manager.notify(1, builder.build());
     }
 
-    // ================== CANAL DE NOTIFICACIONES ==================
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Shake Channel";
             String description = "Notificaciones al detectar movimiento";
             int importance = NotificationManager.IMPORTANCE_HIGH;
 
-            NotificationChannel channel =
-                    new NotificationChannel(CHANNEL_ID, name, importance);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
 
-            NotificationManager notificationManager =
-                    getSystemService(NotificationManager.class);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
     }
 
-    // ================== MÉTODOS COMICS ==================
     private void loadComics() {
         List<Comic> list = dbHelper.getAllComics();
         adapter.setComics(list);
@@ -239,17 +298,14 @@ public class HomeActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    // =================== NOTIFICACIONES PROGRAMADAS ===================
     private void startScheduledNotifications() {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
                 boolean notifEnabled = prefs.getBoolean("notifications_enabled", true);
-                if (notifEnabled) {
-                    sendRandomZappyNotification();
-                }
-                handler.postDelayed(this, 20000); // cada 20 segundos
+                if (notifEnabled) sendRandomZappyNotification();
+                handler.postDelayed(this, 20000);
             }
         }, 20000);
     }
@@ -267,7 +323,6 @@ public class HomeActivity extends AppCompatActivity
                         .setContentText("Nuevo cómic recomendado especialmente para ti.")
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
                 break;
-
             case 1:
                 builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_notification)
@@ -275,7 +330,6 @@ public class HomeActivity extends AppCompatActivity
                         .setContentText("Continúa leyendo donde lo dejaste 🦸‍♂️.")
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
                 break;
-
             case 2:
                 builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_notification)
@@ -285,8 +339,6 @@ public class HomeActivity extends AppCompatActivity
                                 .bigPicture(BitmapFactory.decodeResource(getResources(), R.drawable.deedpool)))
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
                 break;
-
-
             default:
                 builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_notification)
@@ -295,8 +347,6 @@ public class HomeActivity extends AppCompatActivity
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
                 break;
         }
-
         manager.notify((int) System.currentTimeMillis(), builder.build());
     }
 }
-

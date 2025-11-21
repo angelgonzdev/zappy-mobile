@@ -4,9 +4,11 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -17,6 +19,11 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +45,11 @@ public class LibraryActivity extends AppCompatActivity implements ComicAdapter.O
 
     // Botones del footer
     private LinearLayout btnHome, btnLibrary, btnCreate, btnProfile;
+
+    // Sensores
+    private SensorManager sensorManager;
+    private Sensor lightSensor;
+    private boolean brightnessSensorEnabled = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,6 +113,49 @@ public class LibraryActivity extends AppCompatActivity implements ComicAdapter.O
         createNotificationChannelIfNeeded();
         requestNotificationPermissionIfNeeded();
         showWelcomeNotificationIfAllowed();
+
+        // ===== Sensores =====
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+
+        SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
+        brightnessSensorEnabled = prefs.getBoolean("brightness_sensor_enabled", false);
+
+        if (brightnessSensorEnabled && lightSensor != null) {
+            sensorManager.registerListener(lightListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    // Listener de luz
+    private final SensorEventListener lightListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            float lux = event.values[0];
+            float brightness = Math.min(1f, Math.max(0.1f, lux / 200f));
+
+            WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+            layoutParams.screenBrightness = brightness;
+            getWindow().setAttributes(layoutParams);
+
+
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (brightnessSensorEnabled && lightSensor != null) {
+            sensorManager.registerListener(lightListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (lightSensor != null) sensorManager.unregisterListener(lightListener);
     }
 
     // == Notificaciones ==
@@ -128,17 +183,14 @@ public class LibraryActivity extends AppCompatActivity implements ComicAdapter.O
     }
 
     private void showWelcomeNotificationIfAllowed() {
-        // Si Android 13+ y no hay permiso → no mostrar ahora
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // Opcional: puedes esperar a que el usuario acepte y luego mostrar la notificación
             return;
         }
 
         String title = "📚 ¡Bienvenido a la Biblioteca de Zappy! ✨";
         String message = "Has ingresado a un lugar lleno de aventuras, mundos mágicos, héroes legendarios y páginas esperando ser descubiertas. ¡Explora, imagina y disfruta! 🚀🌟📖";
 
-        // Intent que abrirá la LibraryActivity cuando el usuario pulse la notificación
         Intent intent = new Intent(this, LibraryActivity.class);
         PendingIntent pendingIntent;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -148,7 +200,7 @@ public class LibraryActivity extends AppCompatActivity implements ComicAdapter.O
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification) // ajusta a tu drawable
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
@@ -164,7 +216,6 @@ public class LibraryActivity extends AppCompatActivity implements ComicAdapter.O
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == NOTIF_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Si el usuario concedió permiso ahora, mostramos la notificación inmediatamente
                 showWelcomeNotificationIfAllowed();
             }
         }
@@ -175,15 +226,12 @@ public class LibraryActivity extends AppCompatActivity implements ComicAdapter.O
         adapter.setComics(fullList);
     }
 
-    // ================= FILTRO =================
     private void filterList(String text) {
         List<Comic> filtered = new ArrayList<>();
-
         if (text == null || text.trim().isEmpty()) {
             adapter.setComics(fullList);
             return;
         }
-
         String q = text.toLowerCase();
         for (Comic c : fullList) {
             String title = c.getTitle() != null ? c.getTitle().toLowerCase() : "";
@@ -192,7 +240,6 @@ public class LibraryActivity extends AppCompatActivity implements ComicAdapter.O
                 filtered.add(c);
             }
         }
-
         adapter.setComics(filtered);
     }
 
