@@ -1,53 +1,73 @@
-package com.example.zappy_mobile;
-
-import android.content.Intent;
+package com.example.zappy_mobile;import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText etUsuario, etClave;
+    private EditText etCorreo, etClave;
     private Button btnIniciarSesion, btnIrRegistro;
-    private CheckBox cbRecordarme;
-    private DatabaseHelper dbHelper;
+    private FirebaseAuth mAuth;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Si el usuario ya está logueado, saltar al Home directamente
+        if (mAuth.getCurrentUser() != null) {
+            irAHome();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // tu layout de login
+        setContentView(R.layout.activity_login); // Asegúrate que tu XML se llame así
 
-        etUsuario = findViewById(R.id.etUsuario);
+        mAuth = FirebaseAuth.getInstance();
+
+        // Ajusta estos IDs si son diferentes en tu activity_login.xml
+        etCorreo = findViewById(R.id.etCorreo); // O etUsuario, revisa tu XML
         etClave = findViewById(R.id.etClave);
-        cbRecordarme = findViewById(R.id.cbRecordarme);
         btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
         btnIrRegistro = findViewById(R.id.btnIrRegistro);
 
-        dbHelper = new DatabaseHelper(this);
-
-        // Botón iniciar sesión
-        btnIniciarSesion.setOnClickListener(v -> {
-            String username = etUsuario.getText().toString().trim();
-            String password = etClave.getText().toString().trim();
-
-            if(username.isEmpty() || password.isEmpty()){
-                Toast.makeText(this, "Ingrese usuario y contraseña", Toast.LENGTH_SHORT).show();
-            } else {
-                boolean loginOk = dbHelper.checkUser(username, password);
-                if(loginOk){
-                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                    finish();
-                } else {
-                    Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
-                }
-            }
+        btnIrRegistro.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, RegistroActivity.class));
         });
 
-        // Botón ir a registro
-        btnIrRegistro.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RegistroActivity.class)));
+        btnIniciarSesion.setOnClickListener(v -> {
+            String email = etCorreo.getText().toString().trim();
+            String password = etClave.getText().toString().trim();
+
+            if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+                Toast.makeText(this, "Completa los campos", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            loginUsuario(email, password);
+        });
+    }
+
+    private void loginUsuario(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        irAHome();
+                    } else {
+                        Toast.makeText(this, "Error: Credenciales inválidas", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void irAHome() {
+        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+        finish();
     }
 }

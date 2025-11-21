@@ -8,17 +8,20 @@
         android:label="Zappy"
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
 
-        <activity android:name=".LoginActivity" android:exported="true">
+        <!-- 1. REGISTRO: Ahora tiene el INTENT-FILTER para ser la primera -->
+        <activity
+            android:name=".RegistroActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".RegistroActivity" android:exported="true" />
+        <!-- 2. LOGIN: Ya no es la principal, le quitamos el filtro -->
+        <activity android:name=".LoginActivity" android:exported="true" />
 
         <activity android:name=".HomeActivity" android:exported="true" />
-
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".UploadActivity" android:exported="false" />
         <activity android:name=".PdfViewerActivity" android:exported="false" />

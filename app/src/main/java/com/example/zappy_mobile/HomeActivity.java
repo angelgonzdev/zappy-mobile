@@ -11,12 +11,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements ComicAdapter.OnItemClickListener {
 
-    // Base de datos
-    private DBHelper dbHelper;
+    // Variables de Firebase
+    private FirebaseFirestore db;
 
     // RecyclerView
     private RecyclerView rvComics;
@@ -27,13 +32,31 @@ public class HomeActivity extends AppCompatActivity implements ComicAdapter.OnIt
     private Button btnCreate; // botón central
     private ImageView btnSettings;
 
+    // --- SEGURIDAD 1: Verificación al iniciar la actividad (ciclo de vida) ---
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Si no hay usuario logueado, expulsar inmediatamente
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            irAlLogin();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Inicialización de DB y vistas
-        dbHelper = new DBHelper(this);
+        // --- SEGURIDAD 2: Verificación al crear la actividad ---
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            irAlLogin();
+            return; // Detenemos la ejecución para que no cargue nada más
+        }
+
+        // 2. Inicializar Firestore
+        db = FirebaseFirestore.getInstance();
+
+        // Inicialización de vistas
         rvComics = findViewById(R.id.rvComics);
         btnCreate = findViewById(R.id.btnCreateComic);
         btnSettings = findViewById(R.id.btnSettings);
@@ -81,12 +104,42 @@ public class HomeActivity extends AppCompatActivity implements ComicAdapter.OnIt
     @Override
     protected void onResume() {
         super.onResume();
-        loadComics();
+        // Opcional: Podrías verificar aquí también, pero con onStart suele bastar
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            loadComics();
+        }
+    }
+
+    // --- MÉTODO DE SEGURIDAD PARA EXPULSAR AL USUARIO ---
+    private void irAlLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        // Estas banderas borran el historial: el usuario no podrá volver atrás al Home
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void loadComics() {
-        List<Comic> list = dbHelper.getAllComics();
-        adapter.setComics(list);
+        // --- NUEVO: Cargar desde Firebase Firestore ---
+        db.collection("comics")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Comic> list = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            try {
+                                Comic comic = document.toObject(Comic.class);
+                                list.add(comic);
+                            } catch (Exception e) {
+                                // Error al convertir
+                            }
+                        }
+                        adapter.setComics(list);
+                    } else {
+                        Toast.makeText(HomeActivity.this, "Error cargando datos", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void openUpload() {
