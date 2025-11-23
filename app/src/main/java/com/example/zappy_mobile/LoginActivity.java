@@ -42,16 +42,18 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(LoginActivity.this, RegistroActivity.class));
         });
 
-        btnIniciarSesion.setOnClickListener(v -> {
-            String email = etCorreo.getText().toString().trim();
-            String password = etClave.getText().toString().trim();
+       btnIniciarSesion.setOnClickListener(v -> {
+    String email = etCorreo.getText().toString().trim();
+    String password = etClave.getText().toString().trim();
 
-            if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                Toast.makeText(this, "Completa los campos", Toast.LENGTH_SHORT).show();
-                return;
-            }
+    if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+        Toast.makeText(this, "Completa los campos", Toast.LENGTH_SHORT).show();
+        return;
+    }
 
-            loginUsuario(email, password);
+    loginUsuario(email, password);
+});
+
         });
     }
 
@@ -59,15 +61,39 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        // Login exitoso -> ir a Home
                         irAHome();
                     } else {
-                        Toast.makeText(this, "Error: Credenciales inválidas", Toast.LENGTH_SHORT).show();
+                        // --- INICIO DEL MANEJO DE ERRORES DETALLADO ---
+                        String mensajeError = "";
+
+                        try {
+                            // Lanzamos la excepción para poder capturarla por tipos
+                            throw task.getException();
+                        } catch (com.google.firebase.auth.FirebaseAuthInvalidUserException e) {
+                            // El correo no está registrado o la cuenta fue borrada/inhabilitada
+                            mensajeError = "Este usuario no existe o ha sido inhabilitado.";
+                        } catch (com.google.firebase.auth.FirebaseAuthInvalidCredentialsException e) {
+                            // La contraseña es incorrecta o el correo tiene formato mal (ej: faltan letras)
+                            mensajeError = "La contraseña es incorrecta.";
+                        } catch (com.google.firebase.FirebaseNetworkException e) {
+                            // Error de conexión a internet
+                            mensajeError = "Error de conexión. Verifica tu internet.";
+                        } catch (Exception e) {
+                            // Cualquier otro error
+                            mensajeError = "Error al iniciar sesión: " + e.getMessage();
+                        }
+
+                        // Mostrar el mensaje específico al usuario
+                        Toast.makeText(LoginActivity.this, mensajeError, Toast.LENGTH_LONG).show();
+                        // --- FIN DEL MANEJO DE ERRORES ---
                     }
                 });
     }
 
-    private void irAHome() {
-        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-        finish();
+
+
+        // Botón ir a registro
+        btnIrRegistro.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RegistroActivity.class)));
     }
 }
