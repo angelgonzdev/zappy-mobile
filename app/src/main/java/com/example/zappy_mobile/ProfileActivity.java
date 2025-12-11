@@ -2,11 +2,13 @@ package com.example.zappy_mobile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer; // Importación necesaria para el contador
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog; // Importación para la alerta
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
@@ -21,6 +23,10 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvName, tvDescription, tvComicsCount, tvFollowersCount;
     private MaterialButton btnEditProfile;
     private ImageView btnSettings;
+
+    // --- VARIABLE DEL EASTER EGG ---
+    private int contadorEasterEgg = 0;
+    private ImageView profileImage; // Variable para la imagen
 
     // Navegación inferior
     private LinearLayout btnHome, btnLibrary, btnEdit;
@@ -43,7 +49,10 @@ public class ProfileActivity extends AppCompatActivity {
         tvName = findViewById(R.id.tvName);
         tvDescription = findViewById(R.id.tvDescription);
 
-        // (Opcional: Enlazar contadores si los vas a usar luego)
+        // Enlazamos la imagen de perfil para el Easter Egg
+        profileImage = findViewById(R.id.profileImage);
+
+        // (Opcional: Enlazar contadores)
         tvComicsCount = findViewById(R.id.tvComicsCount);
         tvFollowersCount = findViewById(R.id.tvFollowersCount);
 
@@ -59,28 +68,39 @@ public class ProfileActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             userId = currentUser.getUid();
-            // Nota: No llamamos a cargarDatosPerfil() aquí porque onResume()
-            // se ejecuta justo después de onCreate y lo haría dos veces.
         } else {
-            // Si no hay sesión, mandar al Login
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         }
 
         // --- CLICKS Y EVENTOS ---
 
+        // --- LÓGICA DEL EASTER EGG ---
+        profileImage.setOnClickListener(v -> {
+            contadorEasterEgg++;
+
+            // Opcional: Feedback visual pequeño al usuario
+            if (contadorEasterEgg > 4 && contadorEasterEgg < 7) {
+                // Toast.makeText(this, (7 - contadorEasterEgg) + "...", Toast.LENGTH_SHORT).show();
+            }
+
+            if (contadorEasterEgg == 7) {
+                // ¡BINGO! Se llegó a los 7 toques
+                contadorEasterEgg = 0; // Reiniciar contador
+                mostrarBromaExplosion();
+            }
+        });
+        // -----------------------------
+
         btnEditProfile.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
-
             // Enviamos los datos actuales para editar
             intent.putExtra("CURRENT_NAME", tvName.getText().toString());
             intent.putExtra("CURRENT_DESC", tvDescription.getText().toString());
-
             startActivity(intent);
         });
 
         btnSettings.setOnClickListener(v -> {
-            // Navegar a la vista de Settings
             Intent intent = new Intent(ProfileActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
@@ -90,19 +110,65 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(new Intent(this, HomeActivity.class));
             finish();
         });
+        // Lógica para el botón Biblioteca (Library)
+        btnLibrary.setOnClickListener(v -> {
+            startActivity(new Intent(this, LibraryActivity.class)); // Asegúrate de tener LibraryActivity creada
+            finish();
+        });
+
+// Lógica para el botón Editar/Crear (el del medio)
+        btnEdit.setOnClickListener(v -> {
+            startActivity(new Intent(this, EditorActivity.class)); // O UploadActivity, como se llame tu vista
+            // finish(); // Opcional, dependiendo si quieres cerrar el perfil
+        });
+
     }
 
-    // Este método asegura que si editas el perfil y vuelves, se actualice la info
+    // Método que se ejecuta al volver a la pantalla (para recargar datos editados)
     @Override
     protected void onResume() {
         super.onResume();
-        // Verificar usuario nuevamente por seguridad
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            userId = currentUser.getUid();
+        if (userId != null) {
             cargarDatosPerfil();
         }
     }
+
+
+    // --- MÉTODO DEL EASTER EGG DE BATMAN ---
+    // Asegúrate de importar Glide arriba en tu archivo:
+// import com.bumptech.glide.Glide;
+
+    private void mostrarBromaExplosion() {
+        // 1. Preparar la alerta
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+
+        // 2. Inflar el diseño personalizado (dialog_batman.xml)
+        android.view.LayoutInflater inflater = this.getLayoutInflater();
+        android.view.View dialogView = inflater.inflate(R.layout.dialog_batman, null);
+        builder.setView(dialogView);
+
+        // 3. Referenciar la imagen del XML
+        android.widget.ImageView imgBatman = dialogView.findViewById(R.id.imgBatman);
+
+        // 4. USAR GLIDE PARA ANIMAR EL GIF
+        // 'batman_gif' es el nombre de tu archivo en res/drawable
+        com.bumptech.glide.Glide.with(this)
+                .asGif()                 // Forzamos a que sea GIF
+                .load(R.drawable.batman_gif)
+                .into(imgBatman);
+
+        // 5. Configurar y mostrar el diálogo
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+
+        // Poner fondo transparente para que se vea bien el diseño negro
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        dialog.show();
+    }
+
+
 
     // 5. Lógica principal para traer los datos
     private void cargarDatosPerfil() {
@@ -115,10 +181,8 @@ public class ProfileActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document != null && document.exists()) {
 
-                            // A. LEER NOMBRE ("username")
                             String nombre = document.getString("username");
                             if (nombre == null || nombre.isEmpty()) {
-                                // Si no está en BD, usar el de Auth o valor por defecto
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 if (user != null && user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
                                     nombre = user.getDisplayName();
@@ -128,11 +192,7 @@ public class ProfileActivity extends AppCompatActivity {
                             }
                             tvName.setText(nombre);
 
-                            // B. LEER DESCRIPCIÓN ("description") <-- CAMBIO IMPORTANTE AQUÍ
-                            // En EditProfile guardamos "description" (inglés), no "descripcion" (español)
                             String descripcion = document.getString("description");
-
-                            // Si guardaste con el nombre viejo "descripcion", intentamos leer ese también
                             if (descripcion == null) {
                                 descripcion = document.getString("descripcion");
                             }
@@ -144,11 +204,8 @@ public class ProfileActivity extends AppCompatActivity {
                             }
 
                         } else {
-                            // El documento no existe aún en Firestore
                             tvDescription.setText("¡Bienvenido! Edita tu perfil.");
                         }
-                    } else {
-                        // Error silencioso o log para no molestar al usuario cada vez
                     }
                 });
     }

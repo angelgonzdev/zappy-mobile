@@ -39,21 +39,18 @@ android {    namespace = "com.example.zappy_mobile"
 
 dependencies {
     // --- Firebase ---
-    // Importar el BOM (Bill of Materials) - Gestiona las versiones automáticamente
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
-
-    // Librerías de Firebase (SIN versión, el BOM se encarga)
     implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-auth") // Para Login
-    implementation("com.google.firebase:firebase-firestore") // Para Base de datos
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
     implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
-    // --- Android UI ---
     implementation("com.google.firebase:firebase-crashlytics-ndk")
-    implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-messaging")
+
+    // --- Android UI ---
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.activity:activity:1.8.2") // Versión estable
+    implementation("androidx.activity:activity:1.8.2")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
@@ -62,4 +59,9 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // --- GLIDE (Para reproducir el GIF) ---
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 }
+
