@@ -59,8 +59,8 @@ public class ProfileActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             userId = currentUser.getUid();
-            // Llamamos a la función para descargar los datos
-            cargarDatosPerfil();
+            // Nota: No llamamos a cargarDatosPerfil() aquí porque onResume()
+            // se ejecuta justo después de onCreate y lo haría dos veces.
         } else {
             // Si no hay sesión, mandar al Login
             startActivity(new Intent(this, LoginActivity.class));
@@ -70,7 +70,13 @@ public class ProfileActivity extends AppCompatActivity {
         // --- CLICKS Y EVENTOS ---
 
         btnEditProfile.setOnClickListener(v -> {
-            startActivity(new Intent(ProfileActivity.this, EditProfileActivity.class));
+            Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
+
+            // Enviamos los datos actuales para editar
+            intent.putExtra("CURRENT_NAME", tvName.getText().toString());
+            intent.putExtra("CURRENT_DESC", tvDescription.getText().toString());
+
+            startActivity(intent);
         });
 
         btnSettings.setOnClickListener(v -> {
@@ -79,7 +85,6 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-
         // Navegación al Home
         btnHome.setOnClickListener(v -> {
             startActivity(new Intent(this, HomeActivity.class));
@@ -87,52 +92,64 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    // Este método asegura que si editas el perfil y vuelves, se actualice el nombre
+    // Este método asegura que si editas el perfil y vuelves, se actualice la info
     @Override
     protected void onResume() {
         super.onResume();
-        if (userId != null) {
+        // Verificar usuario nuevamente por seguridad
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            userId = currentUser.getUid();
             cargarDatosPerfil();
         }
     }
 
     // 5. Lógica principal para traer los datos
     private void cargarDatosPerfil() {
-        // CORRECCIÓN 1: Usar la colección "users" (en minúscula, como en Registro)
+        if (userId == null) return;
+
         db.collection("users").document(userId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
+                        if (document != null && document.exists()) {
 
-                            // CORRECCIÓN 2: Leer el campo "username" (como lo guardaste en Registro)
+                            // A. LEER NOMBRE ("username")
                             String nombre = document.getString("username");
+                            if (nombre == null || nombre.isEmpty()) {
+                                // Si no está en BD, usar el de Auth o valor por defecto
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                if (user != null && user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
+                                    nombre = user.getDisplayName();
+                                } else {
+                                    nombre = "Usuario Zappy";
+                                }
+                            }
+                            tvName.setText(nombre);
 
-                            // Si por alguna razón vieja usaste otro nombre, intentamos leerlo también
-                            if (nombre == null) nombre = document.getString("nombre");
+                            // B. LEER DESCRIPCIÓN ("description") <-- CAMBIO IMPORTANTE AQUÍ
+                            // En EditProfile guardamos "description" (inglés), no "descripcion" (español)
+                            String descripcion = document.getString("description");
 
-                            String descripcion = document.getString("descripcion");
-
-                            // Asignar texto a la vista
-                            if (nombre != null && !nombre.isEmpty()) {
-                                tvName.setText(nombre);
-                            } else {
-                                tvName.setText("Usuario Zappy");
+                            // Si guardaste con el nombre viejo "descripcion", intentamos leer ese también
+                            if (descripcion == null) {
+                                descripcion = document.getString("descripcion");
                             }
 
                             if (descripcion != null && !descripcion.isEmpty()) {
                                 tvDescription.setText(descripcion);
                             } else {
-                                tvDescription.setText("Sin descripción");
+                                tvDescription.setText("Sin descripción.");
                             }
+
                         } else {
-                            // Si entra aquí, es porque el usuario no tiene ficha en la colección "users"
-                            Toast.makeText(this, "Datos de perfil no encontrados", Toast.LENGTH_SHORT).show();
+                            // El documento no existe aún en Firestore
+                            tvDescription.setText("¡Bienvenido! Edita tu perfil.");
                         }
                     } else {
-                        Toast.makeText(this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                        // Error silencioso o log para no molestar al usuario cada vez
                     }
                 });
-        }
     }
+}
