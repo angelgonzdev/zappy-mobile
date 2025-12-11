@@ -1,113 +1,138 @@
 package com.example.zappy_mobile;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private LinearLayout btnHome, btnLibrary, btnCreate, btnProfile;
+    // 1. Declarar variables
+    private TextView tvName, tvDescription, tvComicsCount, tvFollowersCount;
     private MaterialButton btnEditProfile;
     private ImageView btnSettings;
 
-    // Sensores
-    private SensorManager sensorManager;
-    private Sensor lightSensor;
-    private boolean brightnessSensorEnabled = false;
+    // Navegación inferior
+    private LinearLayout btnHome, btnLibrary, btnEdit;
+
+    // Firebase
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Vincular vistas
-        btnHome = findViewById(R.id.btnHome);
-        btnLibrary = findViewById(R.id.btnLibrary);
-        btnCreate = findViewById(R.id.btnEdit); // antes llamado btnEdit
-        btnProfile = findViewById(R.id.btnProfile);
+        // 2. Inicializar Firebase
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        // 3. Enlazar vistas con el XML
+        tvName = findViewById(R.id.tvName);
+        tvDescription = findViewById(R.id.tvDescription);
+
+        // (Opcional: Enlazar contadores si los vas a usar luego)
+        tvComicsCount = findViewById(R.id.tvComicsCount);
+        tvFollowersCount = findViewById(R.id.tvFollowersCount);
+
         btnEditProfile = findViewById(R.id.btnEditProfile);
         btnSettings = findViewById(R.id.btnSettings);
 
-        // Navegación footer
-        btnHome.setOnClickListener(v ->
-                startActivity(new Intent(ProfileActivity.this, HomeActivity.class))
-        );
+        // Botones del menú inferior
+        btnHome = findViewById(R.id.btnHome);
+        btnLibrary = findViewById(R.id.btnLibrary);
+        btnEdit = findViewById(R.id.btnEdit);
 
-        btnLibrary.setOnClickListener(v ->
-                startActivity(new Intent(ProfileActivity.this, LibraryActivity.class))
-        );
-
-        btnCreate.setOnClickListener(v ->
-                startActivity(new Intent(ProfileActivity.this, EditorActivity.class))
-        );
-
-        btnProfile.setOnClickListener(v ->
-                Toast.makeText(this, "Ya estás en Perfil", Toast.LENGTH_SHORT).show()
-        );
-
-        // Botón editar perfil
-        btnEditProfile.setOnClickListener(v ->
-                startActivity(new Intent(ProfileActivity.this, EditProfileActivity.class))
-        );
-
-        // Botón de Configuración -> Abrir SettingsActivity
-        btnSettings.setOnClickListener(v ->
-                startActivity(new Intent(ProfileActivity.this, SettingsActivity.class))
-        );
-
-        // ===== Sensores =====
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-
-        SharedPreferences prefs = getSharedPreferences("app_settings", MODE_PRIVATE);
-        brightnessSensorEnabled = prefs.getBoolean("brightness_sensor_enabled", false);
-
-        if (brightnessSensorEnabled && lightSensor != null) {
-            sensorManager.registerListener(lightListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        // 4. Verificar usuario actual
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            userId = currentUser.getUid();
+            // Llamamos a la función para descargar los datos
+            cargarDatosPerfil();
+        } else {
+            // Si no hay sesión, mandar al Login
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
         }
+
+        // --- CLICKS Y EVENTOS ---
+
+        btnEditProfile.setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, EditProfileActivity.class));
+        });
+
+        btnSettings.setOnClickListener(v -> {
+            // Navegar a la vista de Settings
+            Intent intent = new Intent(ProfileActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
+
+
+        // Navegación al Home
+        btnHome.setOnClickListener(v -> {
+            startActivity(new Intent(this, HomeActivity.class));
+            finish();
+        });
     }
 
-    // Listener de luz
-    private final SensorEventListener lightListener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            float lux = event.values[0];
-            float brightness = Math.min(1f, Math.max(0.1f, lux / 200f));
-
-            WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-            layoutParams.screenBrightness = brightness;
-            getWindow().setAttributes(layoutParams);
-
-
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-    };
-
+    // Este método asegura que si editas el perfil y vuelves, se actualice el nombre
     @Override
     protected void onResume() {
         super.onResume();
-        if (brightnessSensorEnabled && lightSensor != null) {
-            sensorManager.registerListener(lightListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        if (userId != null) {
+            cargarDatosPerfil();
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (lightSensor != null) sensorManager.unregisterListener(lightListener);
+    // 5. Lógica principal para traer los datos
+    private void cargarDatosPerfil() {
+        // CORRECCIÓN 1: Usar la colección "users" (en minúscula, como en Registro)
+        db.collection("users").document(userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+
+                            // CORRECCIÓN 2: Leer el campo "username" (como lo guardaste en Registro)
+                            String nombre = document.getString("username");
+
+                            // Si por alguna razón vieja usaste otro nombre, intentamos leerlo también
+                            if (nombre == null) nombre = document.getString("nombre");
+
+                            String descripcion = document.getString("descripcion");
+
+                            // Asignar texto a la vista
+                            if (nombre != null && !nombre.isEmpty()) {
+                                tvName.setText(nombre);
+                            } else {
+                                tvName.setText("Usuario Zappy");
+                            }
+
+                            if (descripcion != null && !descripcion.isEmpty()) {
+                                tvDescription.setText(descripcion);
+                            } else {
+                                tvDescription.setText("Sin descripción");
+                            }
+                        } else {
+                            // Si entra aquí, es porque el usuario no tiene ficha en la colección "users"
+                            Toast.makeText(this, "Datos de perfil no encontrados", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        }
     }
-}
